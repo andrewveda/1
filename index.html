@@ -164,25 +164,59 @@ function renderSummary(){
 // PDF generation
 function renderPDF(){
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(18); doc.text("SWOC Quest Summary",20,20);
-  doc.setFontSize(12); doc.setFont("helvetica","normal");
-  doc.text(`Name: ${userData.name}`,20,30);
-  doc.text(`Department: ${userData.department}`,20,37);
+  const doc = new jsPDF('p', 'pt', 'a4');
 
-  let y=50;
-  for(const cat of ["Strengths","Weaknesses","Opportunities","Challenges"]){
-    doc.setFont("helvetica","bold"); doc.text(cat,20,y); y+=7;
-    doc.setFont("helvetica","normal");
-    for(const subcat in userData[cat]){
-      doc.text(`- ${subcat}: ${userData[cat][subcat].join(", ")}`,22,y); y+=7;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let y = 40;
+
+  // Main heading
+  doc.setFontSize(18); doc.setFont("helvetica", "bold");
+  doc.text("SRM Valliammai Engineering College, Department of English", pageWidth/2, y, { align: "center" });
+  y += 30;
+
+  // Prepare table data
+  const categoriesTop = ["Strengths","Weaknesses"];
+  const categoriesBottom = ["Opportunities","Challenges"];
+
+  const tableData = (cats) => cats.map(cat => {
+    let text = "";
+    for(const sub in userData[cat]){
+      const items = userData[cat][sub].join(", ");
+      text += `${sub}: ${items}\n`;
     }
-    y+=3;
-  }
+    return [cat, text];
+  });
 
-  doc.save("SWOC_Quest.pdf");
-  alert("PDF downloaded! 🌟");
+  // Draw table function
+  const drawTable = (data, startY) => {
+    const colWidth = (pageWidth-80)/2;
+    let currY = startY;
+    const rowHeight = 80;
+
+    data.forEach((row, idx)=>{
+      // Background
+      const bgColor = idx%2===0 ? "#302b63" : "#4a3f9f";
+      doc.setFillColor(bgColor); doc.setDrawColor(255); doc.rect(40, currY, colWidth, rowHeight, "FD");
+
+      // Category header
+      doc.setFont("helvetica","bold"); doc.setTextColor("#ffd700");
+      doc.setFontSize(14); doc.text(row[0], 45, currY+20);
+
+      // Content
+      doc.setFont("helvetica","normal"); doc.setTextColor("#ffffff"); doc.setFontSize(12);
+      const lines = doc.splitTextToSize(row[1], colWidth-10);
+      doc.text(lines, 45, currY+35);
+
+      currY += rowHeight;
+    });
+    return currY;
+  };
+
+  y = drawTable(tableData(categoriesTop), y+10); // Top row
+  y = drawTable(tableData(categoriesBottom), y+20); // Bottom row
+
+  doc.save("SWOC_Quest_Fancy.pdf");
+  alert("Fancy PDF downloaded! 🌟");
 }
 
 // Initialize first page
