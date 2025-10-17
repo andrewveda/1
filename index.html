@@ -38,16 +38,17 @@ button:hover { background-color: #6c5fc7; box-shadow:0 0 15px rgba(108,95,199,0.
 .subcategory { margin:1rem 0; cursor:pointer; color:#ffd700; transition:0.3s;}
 .subcategory:hover { color:#00ffff; }
 
-#downloadBtn { background:#00ff9f; color:#000; }
+#downloadBtn { background:#00ff9f; color:#000; padding:1rem 2rem; border-radius:10px; margin-top:1rem; cursor:pointer;}
 </style>
 </head>
 <body>
 
 <div class="container" id="pageContainer">
-  <!-- Dynamic content will be injected here -->
+  <!-- Dynamic content injected here -->
 </div>
 
 <script>
+// Quest data
 const questData = {
   Strengths: {
     "Personal Traits": ["Adaptable","Ambitious","Assertive","Authentic"],
@@ -67,28 +68,23 @@ const questData = {
   }
 };
 
-let pageIndex = 0;
+// Pages
 const pages = ["NameDept","Strengths","Weaknesses","Opportunities","Challenges"];
-const userData = {
-  name: "",
-  department: "",
-  Strengths:{}, Weaknesses:{}, Opportunities:{}, Challenges:{}
-};
+let pageIndex = 0;
+let currentSubcats = [];
+let subcatIndex = 0;
 
-function renderPage() {
+const userData = { name:"", department:"", Strengths:{}, Weaknesses:{}, Opportunities:{}, Challenges:{} };
+
+// Render current page
+function renderPage(){
   const container = document.getElementById('pageContainer');
-  container.innerHTML = "";
+  container.innerHTML = `<div class="page-counter">Page ${pageIndex+1} of ${pages.length}</div>`;
   const pageName = pages[pageIndex];
 
-  // Page counter
-  const counter = document.createElement("div");
-  counter.className = "page-counter";
-  counter.textContent = `Page ${pageIndex+1} of ${pages.length}`;
-  container.appendChild(counter);
-
-  if(pageName === "NameDept") {
-    const h2 = document.createElement("h2"); h2.textContent="Enter your details 🌟"; container.appendChild(h2);
+  if(pageName==="NameDept"){
     container.innerHTML += `
+      <h2>Enter your details 🌟</h2>
       <input id="nameInput" placeholder="Name" style="padding:0.5rem 1rem; font-size:1rem; margin:0.5rem;"><br>
       <select id="departmentSelect" style="padding:0.5rem 1rem; font-size:1rem; margin:0.5rem;">
         <option value="">--Select Department--</option>
@@ -102,19 +98,20 @@ function renderPage() {
     `;
   } else {
     const category = pageName;
-    const h2 = document.createElement("h2"); h2.textContent=`${category}`; container.appendChild(h2);
-    container.innerHTML += "<p>Select a subcategory:</p>";
-    const subcatContainer = document.createElement("div");
-    Object.keys(questData[category]).forEach(subcat=>{
-      const div = document.createElement("div");
-      div.className="subcategory"; div.textContent=subcat;
-      div.onclick = ()=>renderSelector(category,subcat);
-      subcatContainer.appendChild(div);
-    });
-    container.appendChild(subcatContainer);
+    if(subcatIndex === 0) currentSubcats = Object.keys(questData[category]);
+    if(subcatIndex < currentSubcats.length){
+      renderSelector(category, currentSubcats[subcatIndex]);
+    } else {
+      subcatIndex=0;
+      pageIndex++;
+      if(pageIndex>=pages.length){
+        renderSummary();
+      } else renderPage();
+    }
   }
 }
 
+// Render subcategory selector
 function renderSelector(category, subcat){
   const container = document.getElementById('pageContainer');
   container.innerHTML = `<h2>${category} - ${subcat}</h2><p>Select your options:</p>`;
@@ -126,16 +123,19 @@ function renderSelector(category, subcat){
     optionContainer.appendChild(tile);
   });
   container.appendChild(optionContainer);
+
   const btn = document.createElement("button");
-  btn.textContent="Next"; btn.onclick=()=>{
-    // save selected
+  btn.textContent="Next"; 
+  btn.onclick=()=>{
     const selected = Array.from(optionContainer.getElementsByClassName("selected")).map(el=>el.textContent);
     userData[category][subcat] = selected;
+    subcatIndex++;
     renderPage();
   }
   container.appendChild(btn);
 }
 
+// Move from NameDept page
 function nextPage(){
   if(pageIndex===0){
     const name = document.getElementById('nameInput').value.trim();
@@ -144,28 +144,36 @@ function nextPage(){
     userData.name=name; userData.department=dept;
   }
   pageIndex++;
-  if(pageIndex>=pages.length){
-    renderPDF();
-  } else {
-    renderPage();
-  }
+  renderPage();
 }
 
-// PDF Generation
+// Summary & PDF download
+function renderSummary(){
+  const container = document.getElementById('pageContainer');
+  container.innerHTML = `<h2>Summary & Download PDF 🌟</h2><p>Click below to download your SWOC Quest results:</p>`;
+  const btn = document.createElement("button"); btn.id="downloadBtn"; btn.textContent="Download PDF";
+  btn.onclick = renderPDF;
+  container.appendChild(btn);
+
+  // Optional: display summary on screen
+  const pre = document.createElement("pre"); pre.style.textAlign="left"; pre.style.marginTop="1rem";
+  pre.textContent = JSON.stringify(userData, null, 2);
+  container.appendChild(pre);
+}
+
+// PDF generation
 function renderPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.setFont("helvetica","bold");
-  doc.setFontSize(18);
-  doc.text("SWOC Quest Summary",20,20);
-  doc.setFontSize(12);
+  doc.setFontSize(18); doc.text("SWOC Quest Summary",20,20);
+  doc.setFontSize(12); doc.setFont("helvetica","normal");
   doc.text(`Name: ${userData.name}`,20,30);
   doc.text(`Department: ${userData.department}`,20,37);
 
   let y=50;
   for(const cat of ["Strengths","Weaknesses","Opportunities","Challenges"]){
-    doc.setFont("helvetica","bold");
-    doc.text(cat,20,y); y+=7;
+    doc.setFont("helvetica","bold"); doc.text(cat,20,y); y+=7;
     doc.setFont("helvetica","normal");
     for(const subcat in userData[cat]){
       doc.text(`- ${subcat}: ${userData[cat][subcat].join(", ")}`,22,y); y+=7;
