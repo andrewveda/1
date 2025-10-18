@@ -15,14 +15,15 @@ button:disabled { opacity:0.5; cursor:not-allowed; }
 .correct { background-color: #00ff9f !important; color:#000; }
 .wrong { background-color: #ff4f6e !important; color:#fff; }
 #sentenceBox { margin:2rem 0; font-weight:bold; font-size:1.2rem; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; line-height:1.6; }
-.feedback { margin-top:1rem; font-size:1.1rem; padding:1rem; border-radius:8px; }
+.feedback { margin-top:1rem; font-size:1.1rem; padding:1rem; border-radius:8px; white-space: pre-wrap; }
 audio { margin-top:1rem; width:100%; max-width:500px; }
 #audioControls { margin-top:1rem; }
 #audioControls a { display:inline-block; padding:0.8rem 1.5rem; background:#00ffff; color:#000; text-decoration:none; border-radius:8px; margin-top:1rem; font-weight:bold; }
 #audioControls a:hover { background:#00cccc; }
-#scoreCard { font-size:1.2rem; line-height:2; }
-#scoreCard p { margin:0.5rem 0; }
+#scoreCard { font-size:1.1rem; line-height:2; text-align:left; padding:1rem; }
+#scoreCard p { margin:0.8rem 0; }
 .error-message { color:#ff4f6e; margin-top:0.5rem; }
+.tip { font-size:0.9rem; color:#aaa; margin:1rem 0; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -53,12 +54,18 @@ audio { margin-top:1rem; width:100%; max-width:500px; }
 <div class="container" id="questContainer" style="display:none;">
   <h2>📖 Read the Sentence Aloud</h2>
   <div id="sentenceBox"></div>
-  <p style="font-size:0.9rem; color:#aaa;">Click "Start Speaking" and read the sentence clearly</p>
+  <div class="tip">
+    💡 <strong>Tips:</strong><br>
+    • Click "Start Speaking" and speak immediately<br>
+    • Speak clearly and at normal pace<br>
+    • Wait 2-3 seconds after speaking before clicking Stop<br>
+    • If "no speech detected", try speaking louder or closer to mic
+  </div>
   <button id="startRec">🎤 Start Speaking</button>
   <button id="stopRec" disabled>⏹ Stop</button>
+  <button id="viewScoreBtn" style="display:none; background:#00ff9f; color:#000;">➡️ View Score</button>
   <div class="feedback" id="feedback"></div>
   <div id="audioControls"></div>
-  <div id="nextBtnContainer"></div>
 </div>
 
 <div class="container" id="scoreContainer" style="display:none;">
@@ -82,6 +89,7 @@ const sentenceBox = document.getElementById("sentenceBox");
 const feedback = document.getElementById("feedback");
 const audioControls = document.getElementById("audioControls");
 const setupError = document.getElementById("setupError");
+const viewScoreBtn = document.getElementById("viewScoreBtn");
 
 let playerName="", playerDepartment="", playerRegNo="", currentSentence="";
 let similarityScore=0;
@@ -89,11 +97,12 @@ let mediaRecorder;
 let audioChunks = [];
 let recognition;
 let audioStream;
-let spokenText = ""; // Store spoken text
+let spokenText = "";
+let recognitionStarted = false;
 
 // Check browser support
 if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-  alert('Speech recognition not supported in this browser. Please use Chrome, Edge, or Safari.');
+  alert('⚠️ Speech recognition not supported in this browser. Please use Chrome, Edge, or Safari.');
 }
 
 // Populate register numbers based on department
@@ -137,7 +146,7 @@ function beginQuest(){
   feedback.textContent = "";
   feedback.className = "feedback";
   audioControls.innerHTML = "";
-  document.getElementById("nextBtnContainer").innerHTML = "";
+  viewScoreBtn.style.display = "none";
 }
 
 // START RECORDING
@@ -146,10 +155,11 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
     // Reset
     audioChunks = [];
     spokenText = "";
+    recognitionStarted = false;
     audioControls.innerHTML = "";
-    feedback.textContent = "🎙️ Listening... Speak now!";
+    feedback.textContent = "🎙️ Listening... START SPEAKING NOW!";
     feedback.className = "feedback";
-    document.getElementById("nextBtnContainer").innerHTML = "";
+    viewScoreBtn.style.display = "none";
     
     // Request microphone access
     audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
@@ -173,49 +183,72 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
     mediaRecorder.start();
     console.log("MediaRecorder started");
     
-    // Initialize and start speech recognition
+    // Initialize speech recognition with better settings
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = "en-US";
-    recognition.interimResults = false;
+    recognition.interimResults = true; // Changed to true for better detection
+    recognition.continuous = true; // Changed to true
     recognition.maxAlternatives = 1;
-    recognition.continuous = false;
     
     recognition.onstart = () => {
-      console.log("Speech recognition started");
+      console.log("✅ Speech recognition started successfully");
+      recognitionStarted = true;
+      feedback.textContent = "🎙️ Listening... I can hear you! Keep speaking...";
     };
     
     recognition.onresult = (event)=>{
-      console.log("Recognition result received");
-      spokenText = event.results[0][0].transcript.trim();
-      console.log("Spoken:", spokenText);
-      console.log("Expected:", currentSentence);
+      console.log("📝 Recognition result received");
       
-      similarityScore = compareText(spokenText, currentSentence);
-      console.log("Similarity score:", similarityScore);
+      // Get the latest result
+      const lastResult = event.results[event.results.length - 1];
+      const transcript = lastResult[0].transcript.trim();
       
-      // Show feedback
-      showFeedback();
+      if(lastResult.isFinal) {
+        console.log("✅ Final result:", transcript);
+        spokenText = transcript;
+        similarityScore = compareText(spokenText, currentSentence);
+        console.log("📊 Similarity score:", similarityScore);
+        showFeedback();
+      } else {
+        // Show interim results
+        console.log("⏳ Interim result:", transcript);
+        feedback.textContent = "🎙️ Hearing: \"" + transcript + "\"";
+      }
+    };
+    
+    recognition.onspeechstart = () => {
+      console.log("🗣️ Speech detected!");
+      feedback.textContent = "🎙️ Great! I'm hearing you... keep going!";
+    };
+    
+    recognition.onspeechend = () => {
+      console.log("🔇 Speech ended");
     };
     
     recognition.onerror = (event)=>{
-      console.error("Recognition error:", event.error);
-      let errorMsg = "⚠️ Error: ";
+      console.error("❌ Recognition error:", event.error);
+      let errorMsg = "";
+      
       switch(event.error) {
         case 'no-speech':
-          errorMsg += "No speech detected. Please try again.";
+          errorMsg = "⚠️ No speech detected.\n\nTips:\n• Speak louder or closer to the microphone\n• Check if your mic is working\n• Try again and start speaking immediately";
           break;
         case 'audio-capture':
-          errorMsg += "No microphone found. Please check your device.";
+          errorMsg = "⚠️ No microphone found. Please check your device.";
           break;
         case 'not-allowed':
-          errorMsg += "Microphone permission denied. Please allow access.";
+          errorMsg = "⚠️ Microphone permission denied. Please allow access and refresh.";
           break;
         case 'aborted':
-          errorMsg += "Recording was stopped.";
+          errorMsg = "⚠️ Recording was stopped.";
+          break;
+        case 'network':
+          errorMsg = "⚠️ Network error. Check your internet connection.";
           break;
         default:
-          errorMsg += event.error;
+          errorMsg = "⚠️ Error: " + event.error;
       }
+      
       feedback.textContent = errorMsg;
       feedback.className = "feedback";
       
@@ -233,35 +266,42 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
     };
     
     recognition.onend = ()=>{
-      console.log("Recognition ended");
-      // If we got results, show feedback
-      if(spokenText) {
+      console.log("🏁 Recognition ended");
+      
+      // If we have text but haven't shown feedback yet
+      if(spokenText && feedback.textContent.includes("Hearing:")) {
+        similarityScore = compareText(spokenText, currentSentence);
         showFeedback();
       }
     };
     
-    recognition.start();
-    console.log("Recognition started");
+    try {
+      recognition.start();
+      console.log("🎬 Recognition start initiated");
+    } catch(e) {
+      console.error("Error starting recognition:", e);
+      feedback.textContent = "⚠️ Could not start speech recognition. Try refreshing the page.";
+    }
     
     // Update button states
     document.getElementById("startRec").disabled = true;
     document.getElementById("stopRec").disabled = false;
     
   } catch(error) {
-    console.error("Error starting recording:", error);
-    feedback.textContent = "⚠️ Could not access microphone. Please grant permission.";
+    console.error("❌ Error starting recording:", error);
+    feedback.textContent = "⚠️ Could not access microphone. Please grant permission and try again.";
     feedback.className = "feedback";
   }
 });
 
 // STOP RECORDING
 document.getElementById("stopRec").addEventListener("click", ()=>{
-  console.log("Stop button clicked");
+  console.log("⏹️ Stop button clicked");
   
   if(recognition) {
     try {
       recognition.stop();
-      console.log("Recognition stopped");
+      console.log("Recognition stop initiated");
     } catch(e) {
       console.error("Error stopping recognition:", e);
     }
@@ -275,37 +315,35 @@ document.getElementById("stopRec").addEventListener("click", ()=>{
   document.getElementById("startRec").disabled = false;
   document.getElementById("stopRec").disabled = true;
   
-  // If no speech was detected, show a message
-  setTimeout(() => {
-    if(!spokenText && feedback.textContent === "🎙️ Listening... Speak now!") {
-      feedback.textContent = "⚠️ No speech detected. Please try again and speak clearly.";
-    }
-  }, 500);
+  // If no speech was captured
+  if(!spokenText) {
+    setTimeout(() => {
+      if(!spokenText) {
+        feedback.textContent = "⚠️ No speech was captured.\n\nPlease try again and:\n• Start speaking immediately after clicking 'Start Speaking'\n• Speak clearly and loud enough\n• Make sure your microphone is working";
+        feedback.className = "feedback";
+      }
+    }, 1000);
+  }
 });
 
 // SHOW FEEDBACK AFTER RECOGNITION
 function showFeedback() {
   if(similarityScore >= 0.7){
-    feedback.textContent = `✅ Great job! Accuracy: ${Math.round(similarityScore*100)}%`;
+    feedback.textContent = `✅ Great job! Accuracy: ${Math.round(similarityScore*100)}%\n\nYou said: "${spokenText}"`;
     feedback.className = "feedback correct";
   } else {
-    feedback.textContent = `❌ Try again! Accuracy: ${Math.round(similarityScore*100)}%`;
+    feedback.textContent = `❌ Not quite right. Accuracy: ${Math.round(similarityScore*100)}%\n\nYou said: "${spokenText}"\n\nExpected: "${currentSentence}"`;
     feedback.className = "feedback wrong";
   }
   
-  feedback.textContent += "\n\nYou said: \"" + spokenText + "\"";
+  // SHOW VIEW SCORE BUTTON
+  viewScoreBtn.style.display = "inline-block";
   
-  // SHOW NEXT BUTTON
-  const nextBtnContainer = document.getElementById("nextBtnContainer");
-  nextBtnContainer.innerHTML = "";
-  const nextBtn = document.createElement("button");
-  nextBtn.textContent = "➡️ View Score";
-  nextBtn.style.marginTop = "1rem";
-  nextBtn.onclick = showScore;
-  nextBtnContainer.appendChild(nextBtn);
-  
-  console.log("Feedback shown, next button added");
+  console.log("✅ Feedback shown, View Score button displayed");
 }
+
+// VIEW SCORE BUTTON
+viewScoreBtn.addEventListener("click", showScore);
 
 // CREATE PLAYBACK AND DOWNLOAD
 function createPlaybackAndDownload(){
@@ -330,36 +368,46 @@ function createPlaybackAndDownload(){
   audioControls.appendChild(audioEl);
   audioControls.appendChild(downloadBtn);
   
-  console.log("Audio playback created");
+  console.log("🎵 Audio playback created");
 }
 
 // SHOW SCORE
 function showScore() {
-  console.log("showScore called");
-  console.log("Current similarity score:", similarityScore);
+  console.log("📊 showScore called");
   
   const accuracyPercent = Math.round(similarityScore * 100);
   let grade = "";
-  if(accuracyPercent >= 90) grade = "🏆 Excellent!";
-  else if(accuracyPercent >= 70) grade = "👍 Good Job!";
-  else grade = "💪 Keep Practicing!";
+  let emoji = "";
+  
+  if(accuracyPercent >= 90) {
+    grade = "Excellent!";
+    emoji = "🏆";
+  } else if(accuracyPercent >= 70) {
+    grade = "Good Job!";
+    emoji = "👍";
+  } else if(accuracyPercent >= 50) {
+    grade = "Keep Practicing!";
+    emoji = "💪";
+  } else {
+    grade = "Try Again!";
+    emoji = "🎯";
+  }
   
   document.getElementById("scoreCard").innerHTML = `
-    <p>👤 <strong>Player:</strong> ${playerName}</p>
+    <p>${emoji} <strong>Grade:</strong> ${grade}</p>
     <p>📊 <strong>Accuracy:</strong> ${accuracyPercent}%</p>
-    <p>🎯 <strong>Grade:</strong> ${grade}</p>
+    <p>👤 <strong>Player:</strong> ${playerName}</p>
     <p>🏷 <strong>Department:</strong> ${playerDepartment}</p>
     <p>🔢 <strong>Register No:</strong> ${playerRegNo}</p>
-    <p>📝 <strong>Expected:</strong> ${currentSentence}</p>
-    <p>🗣️ <strong>You said:</strong> ${spokenText}</p>
+    <hr style="border:1px solid rgba(255,255,255,0.2); margin:1rem 0;">
+    <p>📝 <strong>Expected:</strong><br>"${currentSentence}"</p>
+    <p>🗣️ <strong>You said:</strong><br>"${spokenText || 'Nothing captured'}"</p>
   `;
-  
-  console.log("Score card HTML set");
   
   document.getElementById("questContainer").style.display = "none";
   document.getElementById("scoreContainer").style.display = "block";
   
-  console.log("Score container displayed");
+  console.log("✅ Score container displayed");
 }
 
 // TEXT COMPARISON FUNCTIONS
@@ -399,12 +447,13 @@ function editDistance(s1, s2){
 
 // RESTART
 document.getElementById("restartBtn").addEventListener("click", ()=>{
-  console.log("Restart clicked");
+  console.log("🔄 Restart clicked");
   
   // Reset all state
   similarityScore = 0;
   audioChunks = [];
   spokenText = "";
+  recognitionStarted = false;
   
   // Reset UI
   document.getElementById("scoreContainer").style.display = "none";
@@ -415,7 +464,7 @@ document.getElementById("restartBtn").addEventListener("click", ()=>{
   feedback.textContent = "";
   feedback.className = "feedback";
   audioControls.innerHTML = "";
-  document.getElementById("nextBtnContainer").innerHTML = "";
+  viewScoreBtn.style.display = "none";
   setupError.textContent = "";
   
   // Re-enable buttons
