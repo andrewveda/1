@@ -89,6 +89,7 @@ let mediaRecorder;
 let audioChunks = [];
 let recognition;
 let audioStream;
+let spokenText = ""; // Store spoken text
 
 // Check browser support
 if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -139,82 +140,12 @@ function beginQuest(){
   document.getElementById("nextBtnContainer").innerHTML = "";
 }
 
-// Initialize speech recognition
-function initRecognition() {
-  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  
-  recognition.onresult = (event)=>{
-    const spoken = event.results[0][0].transcript.trim();
-    console.log("Spoken:", spoken);
-    console.log("Expected:", currentSentence);
-    
-    similarityScore = compareText(spoken, currentSentence);
-    
-    if(similarityScore >= 0.7){
-      feedback.textContent = `✅ Great job! Accuracy: ${Math.round(similarityScore*100)}%`;
-      feedback.className = "feedback correct";
-    } else {
-      feedback.textContent = `❌ Try again! Accuracy: ${Math.round(similarityScore*100)}%`;
-      feedback.className = "feedback wrong";
-    }
-    
-    feedback.textContent += "\n\nYou said: \"" + spoken + "\"";
-    
-    // SHOW NEXT BUTTON
-    const nextBtnContainer = document.getElementById("nextBtnContainer");
-    nextBtnContainer.innerHTML = "";
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "➡️ View Score";
-    nextBtn.style.marginTop = "1rem";
-    nextBtn.onclick = showScore;
-    nextBtnContainer.appendChild(nextBtn);
-  };
-  
-  recognition.onerror = (event)=>{
-    console.error("Recognition error:", event.error);
-    let errorMsg = "⚠️ Error: ";
-    switch(event.error) {
-      case 'no-speech':
-        errorMsg += "No speech detected. Please try again.";
-        break;
-      case 'audio-capture':
-        errorMsg += "No microphone found. Please check your device.";
-        break;
-      case 'not-allowed':
-        errorMsg += "Microphone permission denied. Please allow access.";
-        break;
-      default:
-        errorMsg += event.error;
-    }
-    feedback.textContent = errorMsg;
-    feedback.className = "feedback";
-    
-    // Re-enable buttons
-    document.getElementById("startRec").disabled = false;
-    document.getElementById("stopRec").disabled = true;
-    
-    // Stop media recorder if active
-    if(mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-    }
-    if(audioStream) {
-      audioStream.getTracks().forEach(track => track.stop());
-    }
-  };
-  
-  recognition.onend = ()=>{
-    console.log("Recognition ended");
-  };
-}
-
 // START RECORDING
 document.getElementById("startRec").addEventListener("click", async ()=>{
   try {
     // Reset
     audioChunks = [];
+    spokenText = "";
     audioControls.innerHTML = "";
     feedback.textContent = "🎙️ Listening... Speak now!";
     feedback.className = "feedback";
@@ -231,6 +162,7 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
       }
     };
     mediaRecorder.onstop = ()=> { 
+      console.log("MediaRecorder stopped");
       createPlaybackAndDownload();
       // Stop all audio tracks
       if(audioStream) {
@@ -239,10 +171,77 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
     };
     
     mediaRecorder.start();
+    console.log("MediaRecorder started");
     
-    // Start speech recognition
-    initRecognition();
+    // Initialize and start speech recognition
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.continuous = false;
+    
+    recognition.onstart = () => {
+      console.log("Speech recognition started");
+    };
+    
+    recognition.onresult = (event)=>{
+      console.log("Recognition result received");
+      spokenText = event.results[0][0].transcript.trim();
+      console.log("Spoken:", spokenText);
+      console.log("Expected:", currentSentence);
+      
+      similarityScore = compareText(spokenText, currentSentence);
+      console.log("Similarity score:", similarityScore);
+      
+      // Show feedback
+      showFeedback();
+    };
+    
+    recognition.onerror = (event)=>{
+      console.error("Recognition error:", event.error);
+      let errorMsg = "⚠️ Error: ";
+      switch(event.error) {
+        case 'no-speech':
+          errorMsg += "No speech detected. Please try again.";
+          break;
+        case 'audio-capture':
+          errorMsg += "No microphone found. Please check your device.";
+          break;
+        case 'not-allowed':
+          errorMsg += "Microphone permission denied. Please allow access.";
+          break;
+        case 'aborted':
+          errorMsg += "Recording was stopped.";
+          break;
+        default:
+          errorMsg += event.error;
+      }
+      feedback.textContent = errorMsg;
+      feedback.className = "feedback";
+      
+      // Re-enable buttons
+      document.getElementById("startRec").disabled = false;
+      document.getElementById("stopRec").disabled = true;
+      
+      // Stop media recorder if active
+      if(mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+      }
+      if(audioStream) {
+        audioStream.getTracks().forEach(track => track.stop());
+      }
+    };
+    
+    recognition.onend = ()=>{
+      console.log("Recognition ended");
+      // If we got results, show feedback
+      if(spokenText) {
+        showFeedback();
+      }
+    };
+    
     recognition.start();
+    console.log("Recognition started");
     
     // Update button states
     document.getElementById("startRec").disabled = true;
@@ -257,16 +256,56 @@ document.getElementById("startRec").addEventListener("click", async ()=>{
 
 // STOP RECORDING
 document.getElementById("stopRec").addEventListener("click", ()=>{
+  console.log("Stop button clicked");
+  
   if(recognition) {
-    recognition.stop();
+    try {
+      recognition.stop();
+      console.log("Recognition stopped");
+    } catch(e) {
+      console.error("Error stopping recognition:", e);
+    }
   }
+  
   if(mediaRecorder && mediaRecorder.state === "recording") {
     mediaRecorder.stop();
+    console.log("MediaRecorder stop initiated");
   }
   
   document.getElementById("startRec").disabled = false;
   document.getElementById("stopRec").disabled = true;
+  
+  // If no speech was detected, show a message
+  setTimeout(() => {
+    if(!spokenText && feedback.textContent === "🎙️ Listening... Speak now!") {
+      feedback.textContent = "⚠️ No speech detected. Please try again and speak clearly.";
+    }
+  }, 500);
 });
+
+// SHOW FEEDBACK AFTER RECOGNITION
+function showFeedback() {
+  if(similarityScore >= 0.7){
+    feedback.textContent = `✅ Great job! Accuracy: ${Math.round(similarityScore*100)}%`;
+    feedback.className = "feedback correct";
+  } else {
+    feedback.textContent = `❌ Try again! Accuracy: ${Math.round(similarityScore*100)}%`;
+    feedback.className = "feedback wrong";
+  }
+  
+  feedback.textContent += "\n\nYou said: \"" + spokenText + "\"";
+  
+  // SHOW NEXT BUTTON
+  const nextBtnContainer = document.getElementById("nextBtnContainer");
+  nextBtnContainer.innerHTML = "";
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "➡️ View Score";
+  nextBtn.style.marginTop = "1rem";
+  nextBtn.onclick = showScore;
+  nextBtnContainer.appendChild(nextBtn);
+  
+  console.log("Feedback shown, next button added");
+}
 
 // CREATE PLAYBACK AND DOWNLOAD
 function createPlaybackAndDownload(){
@@ -290,10 +329,15 @@ function createPlaybackAndDownload(){
   audioControls.innerHTML = "";
   audioControls.appendChild(audioEl);
   audioControls.appendChild(downloadBtn);
+  
+  console.log("Audio playback created");
 }
 
 // SHOW SCORE
 function showScore() {
+  console.log("showScore called");
+  console.log("Current similarity score:", similarityScore);
+  
   const accuracyPercent = Math.round(similarityScore * 100);
   let grade = "";
   if(accuracyPercent >= 90) grade = "🏆 Excellent!";
@@ -306,10 +350,16 @@ function showScore() {
     <p>🎯 <strong>Grade:</strong> ${grade}</p>
     <p>🏷 <strong>Department:</strong> ${playerDepartment}</p>
     <p>🔢 <strong>Register No:</strong> ${playerRegNo}</p>
+    <p>📝 <strong>Expected:</strong> ${currentSentence}</p>
+    <p>🗣️ <strong>You said:</strong> ${spokenText}</p>
   `;
+  
+  console.log("Score card HTML set");
   
   document.getElementById("questContainer").style.display = "none";
   document.getElementById("scoreContainer").style.display = "block";
+  
+  console.log("Score container displayed");
 }
 
 // TEXT COMPARISON FUNCTIONS
@@ -349,9 +399,12 @@ function editDistance(s1, s2){
 
 // RESTART
 document.getElementById("restartBtn").addEventListener("click", ()=>{
+  console.log("Restart clicked");
+  
   // Reset all state
   similarityScore = 0;
   audioChunks = [];
+  spokenText = "";
   
   // Reset UI
   document.getElementById("scoreContainer").style.display = "none";
