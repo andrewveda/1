@@ -1,524 +1,443 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>National Level FDP | Communication, Critical Thinking and Classroom Engagement</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FDP Brochure — Communication, Critical Thinking & Classroom Engagement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Cinzel:wght@400;500;600;700&family=Cormorant+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-
+*{margin:0;padding:0;box-sizing:border-box;}
 :root{
-    --bg:#d9d5cd;
-    --text:#2f2f2f;
-    --accent:#5a5245;
-    --white:#ffffff;
+  --ink:#1a1208;
+  --forest:#1b3a2d;
+  --gold:#b8922a;
+  --gold-light:#d4aa4a;
+  --gold-pale:#f0e0a8;
+  --cream:#faf6ee;
+  --parchment:#f2ebdc;
+  --paper:#fdf9f3;
+  --muted:#5a4a2a;
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+@media screen {
+  body { background:#c8bfaa; padding:30px 20px; font-family:'EB Garamond',serif; }
+  .page { width:210mm; margin:0 auto 30px; background:var(--paper); box-shadow:0 6px 40px rgba(0,0,0,0.28); position:relative; overflow:hidden; }
+}
+@media print {
+  body { margin:0; padding:0; background:white; font-family:'EB Garamond',serif; }
+  .page { width:210mm; height:297mm; margin:0; page-break-after:always; overflow:hidden; background:var(--paper); position:relative; }
+  .page:last-child { page-break-after:avoid; }
+  @page { size:A4; margin:0; }
 }
 
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Libre Baskerville', serif;
-    line-height:1.8;
-}
+/* ─── BORDER ─── */
+.pb { position:absolute; inset:8mm; border:0.6px solid var(--gold); pointer-events:none; z-index:10; }
+.pb::before { content:''; position:absolute; inset:3.5px; border:0.35px solid var(--gold-light); opacity:0.32; }
+.cn { position:absolute; width:16px; height:16px; }
+.cn svg { display:block; width:100%; height:100%; }
+.cn.tl{top:-1px;left:-1px;} .cn.tr{top:-1px;right:-1px;transform:scaleX(-1);} .cn.bl{bottom:-1px;left:-1px;transform:scaleY(-1);} .cn.br{bottom:-1px;right:-1px;transform:scale(-1);}
 
-section{
-    min-height:100vh;
-    padding:70px 8%;
-    border-bottom:1px solid rgba(0,0,0,0.08);
-}
+/* ─── HELPERS ─── */
+.gr { width:100%; height:1px; background:linear-gradient(to right,transparent,var(--gold),var(--gold-light),var(--gold),transparent); margin:3.5mm 0; }
+.gr-sm { width:55%; height:0.5px; background:linear-gradient(to right,transparent,var(--gold-light),transparent); margin:2.5mm auto; }
+.orn { font-family:'EB Garamond',serif; color:var(--gold); text-align:center; letter-spacing:0.25em; }
+.orn-line { display:flex; align-items:center; gap:7px; justify-content:center; margin-top:3px; }
+.orn-line .ln { flex:1; max-width:50px; height:0.5px; background:var(--gold); opacity:0.4; }
+.orn-line .dm { width:4px; height:4px; background:var(--gold); transform:rotate(45deg); flex-shrink:0; }
 
-.hero{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    text-align:center;
-    background:
-    linear-gradient(rgba(217,213,205,0.85),rgba(217,213,205,0.88)),
-    url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1400&auto=format&fit=crop');
-    background-size:cover;
-    background-position:center;
-}
+.sh { text-align:center; margin-bottom:3.5mm; }
+.sh .lbl { font-family:'Cormorant SC',serif; font-size:7px; letter-spacing:0.28em; color:var(--gold); text-transform:uppercase; display:block; margin-bottom:2px; }
+.sh .ttl { font-family:'Cinzel',serif; font-size:15px; font-weight:600; color:var(--forest); letter-spacing:0.03em; line-height:1.25; }
 
-.logo-row{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:20px;
-    margin-bottom:20px;
-}
+.bt { font-family:'EB Garamond',serif; font-size:10.5px; line-height:1.82; color:var(--ink); text-align:justify; }
+.dc::first-letter { font-family:'Cinzel',serif; font-size:2.8em; line-height:0.8; float:left; color:var(--forest); margin:0.06em 4px 0 0; font-weight:700; }
 
-.logo{
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:bold;
-    box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
+/* ─── COVER ─── */
+#cover { display:flex; flex-direction:column; align-items:center; padding:11mm 16mm 9mm; }
+.cv-top { width:100%; display:flex; flex-direction:column; align-items:center; padding-bottom:4mm; border-bottom:0.6px solid var(--gold); }
+.seal { width:50px; height:50px; border-radius:50%; border:1.5px solid var(--gold); background:var(--forest); color:var(--gold-light); font-family:'Cinzel',serif; font-size:7px; letter-spacing:0.03em; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:4px; line-height:1.4; flex-shrink:0; }
+.cn-name { font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:0.09em; color:var(--forest); text-align:center; text-transform:uppercase; line-height:1.55; }
+.cn-sub { font-family:'EB Garamond',serif; font-style:italic; font-size:9.5px; color:var(--muted); text-align:center; margin-top:2px; }
+.cv-disc { font-family:'Cormorant SC',serif; font-size:9px; letter-spacing:0.22em; color:var(--gold); text-align:center; text-transform:uppercase; margin:3.5mm 0 2mm; }
+.cv-title { font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:var(--forest); text-align:center; line-height:1.2; letter-spacing:0.02em; max-width:150mm; margin:0 auto; }
+.cv-title span { color:var(--gold); }
+.cv-meta { width:100%; background:var(--forest); padding:5mm 12mm; margin:4.5mm 0 4mm; position:relative; }
+.cv-meta::before,.cv-meta::after { content:''; position:absolute; left:0; right:0; height:1.5px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.cv-meta::before{top:0;} .cv-meta::after{bottom:0;}
+.mg { display:grid; grid-template-columns:1fr 0.5px 1fr 0.5px 1fr; gap:0 10px; align-items:center; }
+.mdiv { background:rgba(184,146,42,0.25); height:30px; }
+.mi { text-align:center; }
+.ml { font-family:'Cormorant SC',serif; font-size:7px; letter-spacing:0.2em; color:var(--gold-pale); text-transform:uppercase; display:block; margin-bottom:2px; }
+.mv { font-family:'EB Garamond',serif; font-size:11.5px; color:var(--cream); font-weight:600; line-height:1.4; }
+.cv-fee { font-family:'Cormorant SC',serif; font-size:10.5px; letter-spacing:0.14em; color:var(--forest); text-align:center; margin-bottom:3.5mm; }
+.cv-fee span { display:inline-block; border:0.5px solid var(--gold); padding:2px 13px; background:var(--gold-pale); color:var(--forest); font-weight:600; }
+.cv-dept { width:100%; border:0.5px solid var(--gold); padding:3.5mm 8mm; text-align:center; background:var(--parchment); }
+.cv-dept p { font-family:'EB Garamond',serif; font-size:10px; color:var(--muted); letter-spacing:0.05em; line-height:1.85; }
+.cv-dept strong { font-family:'Cinzel',serif; font-size:9px; color:var(--forest); letter-spacing:0.08em; }
 
-.college{
-    font-size:2rem;
-    font-family:'Cormorant Garamond', serif;
-    font-weight:600;
-}
+/* ─── INNER PAGES ─── */
+.ip { padding:11mm 16mm 14mm; }
 
-.department{
-    font-style:italic;
-    margin:20px 0;
-    font-size:1.3rem;
-}
+/* Patron strip */
+.pat { background:var(--forest); padding:4mm 9mm; margin-bottom:4mm; position:relative; }
+.pat::before,.pat::after { content:''; position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.pat::before{top:0;} .pat::after{bottom:0;}
+.pat-title { font-family:'Cormorant SC',serif; font-size:7.5px; letter-spacing:0.24em; color:var(--gold-pale); text-transform:uppercase; text-align:center; margin-bottom:3mm; }
+.pat-grid { display:grid; grid-template-columns:1fr 0.5px 1fr; gap:0 9mm; align-items:start; }
+.pdiv { background:rgba(184,146,42,0.22); }
+.pat-ch { font-family:'Cormorant SC',serif; font-size:7px; letter-spacing:0.18em; color:var(--gold); text-transform:uppercase; border-bottom:0.5px solid rgba(184,146,42,0.28); padding-bottom:1.5mm; margin-bottom:2mm; }
+.pat-n { font-family:'EB Garamond',serif; font-size:10px; color:var(--cream); line-height:1.82; }
+.pat-n span { font-style:italic; font-size:9px; color:var(--gold-pale); }
 
-.title{
-    font-size:4rem;
-    line-height:1;
-    font-family:'Cormorant Garamond', serif;
-    font-weight:700;
-    margin:20px auto;
-    max-width:1000px;
-}
+/* Two-col */
+.two { display:grid; grid-template-columns:1fr 0.5px 1fr; gap:0 6mm; margin-top:3.5mm; }
+.crule { background:var(--gold); opacity:0.2; }
+.ch { font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.09em; color:var(--forest); text-transform:uppercase; margin-bottom:2.5mm; display:flex; align-items:center; gap:7px; }
+.ch::after { content:''; flex:1; height:0.5px; background:var(--gold); opacity:0.35; }
 
-.subtitle{
-    font-size:1.4rem;
-    margin-top:20px;
-}
+/* Objectives */
+.og { display:grid; grid-template-columns:1fr 1fr; gap:3mm; margin-top:3.5mm; }
+.oc { border:0.5px solid var(--gold); padding:3.5mm 4.5mm 4mm; background:var(--parchment); position:relative; }
+.oc::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--forest); }
+.on { font-family:'Cinzel',serif; font-size:20px; color:rgba(184,146,42,0.15); position:absolute; bottom:2mm; right:3.5mm; line-height:1; }
+.ot { font-family:'Cinzel',serif; font-size:9.5px; color:var(--forest); letter-spacing:0.06em; margin-bottom:1.5mm; text-transform:uppercase; }
+.ox { font-family:'EB Garamond',serif; font-size:10px; line-height:1.68; color:var(--ink); }
 
-.meta{
-    margin-top:25px;
-    font-size:1.1rem;
-}
+/* Resource persons — compact horizontal */
+.rl { display:flex; flex-direction:column; gap:0; margin-top:3mm; }
+.rc { display:grid; grid-template-columns:6mm 1fr 1fr; gap:0 3mm; align-items:baseline; border-bottom:0.5px solid rgba(184,146,42,0.2); padding:2mm 0; }
+.rc:last-child { border-bottom:none; }
+.ri { font-family:'Cinzel',serif; font-size:8.5px; color:var(--gold); }
+.rn { font-family:'EB Garamond',serif; font-size:11.5px; font-weight:600; color:var(--forest); }
+.rd { font-family:'EB Garamond',serif; font-style:italic; font-size:9.5px; color:var(--muted); }
 
-.btn{
-    margin-top:35px;
-    display:inline-block;
-    padding:14px 32px;
-    background:var(--accent);
-    color:white;
-    text-decoration:none;
-    border-radius:40px;
-    transition:0.3s;
-}
+/* Schedule */
+.st { width:100%; border-collapse:collapse; margin-top:3mm; }
+.st th { font-family:'Cinzel',serif; font-size:7.5px; letter-spacing:0.09em; color:var(--cream); background:var(--forest); padding:3mm 3.5mm; text-align:left; font-weight:500; }
+.st td { font-family:'EB Garamond',serif; font-size:10px; color:var(--ink); padding:2.5mm 3.5mm; border-bottom:0.5px solid rgba(184,146,42,0.18); vertical-align:top; line-height:1.55; }
+.st tr:nth-child(even) td { background:var(--parchment); }
+.dc2 { font-family:'Cinzel',serif; font-size:8px; color:var(--gold); letter-spacing:0.04em; white-space:nowrap; }
 
-.btn:hover{
-    transform:translateY(-2px);
-}
+/* Committee */
+.cg { display:grid; grid-template-columns:1fr 1fr; gap:3mm; margin-top:3.5mm; }
+.cc { padding:3mm 4mm; border:0.5px solid rgba(184,146,42,0.38); background:var(--parchment); }
+.cr { font-family:'Cormorant SC',serif; font-size:7px; letter-spacing:0.17em; color:var(--gold); text-transform:uppercase; border-bottom:0.5px solid rgba(184,146,42,0.25); padding-bottom:1.5mm; margin-bottom:2mm; }
+.cn2 { font-family:'EB Garamond',serif; font-size:10px; color:var(--ink); line-height:1.75; }
+.cn2 span { font-style:italic; font-size:9px; color:var(--muted); }
 
-h2{
-    font-family:'Cormorant Garamond', serif;
-    font-size:3rem;
-    margin-bottom:30px;
-    text-align:center;
-}
+/* Registration */
+.rb { background:var(--forest); padding:4.5mm 8mm; margin:3.5mm 0; position:relative; }
+.rb::before,.rb::after { content:''; position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.rb::before{top:0;} .rb::after{bottom:0;}
 
-.content{
-    max-width:1100px;
-    margin:auto;
-    font-size:1.05rem;
-}
+.reg-two { display:grid; grid-template-columns:1fr 0.5px 1fr; gap:0 8mm; }
+.rdiv { background:rgba(184,146,42,0.22); }
+.rr { display:flex; align-items:baseline; gap:5px; margin-bottom:2.5mm; }
+.rr:last-child { margin-bottom:0; }
+.rl2 { font-family:'Cormorant SC',serif; font-size:7.5px; letter-spacing:0.16em; color:var(--gold-pale); text-transform:uppercase; min-width:22mm; flex-shrink:0; }
+.rv { font-family:'EB Garamond',serif; font-size:10.5px; color:var(--cream); line-height:1.45; }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:30px;
-}
+.pb2 { border:0.5px solid var(--gold); padding:3mm 5mm; background:var(--parchment); }
+.pb2-t { font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:0.09em; color:var(--forest); text-transform:uppercase; margin-bottom:2mm; border-bottom:0.5px solid rgba(184,146,42,0.28); padding-bottom:1.5mm; }
+.pr { display:grid; grid-template-columns:35mm 1fr; gap:1.5mm; margin-bottom:1.5mm; }
+.pr:last-child { margin-bottom:0; }
+.pl { font-family:'Cormorant SC',serif; font-size:8px; letter-spacing:0.09em; color:var(--muted); text-transform:uppercase; }
+.pv { font-family:'EB Garamond',serif; font-size:10px; color:var(--ink); font-weight:600; }
 
-.card{
-    background:rgba(255,255,255,0.45);
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.05);
-    backdrop-filter:blur(4px);
-}
+.cert { padding:3mm 5mm; border:0.5px solid var(--gold); background:var(--gold-pale); margin-top:3mm; text-align:center; }
+.cert p { font-family:'EB Garamond',serif; font-style:italic; font-size:10.5px; color:var(--forest); line-height:1.65; }
 
-.card h3{
-    font-family:'Cormorant Garamond', serif;
-    font-size:2rem;
-    margin-bottom:10px;
-}
+/* Page footer */
+.pf { position:absolute; bottom:11mm; left:16mm; right:16mm; display:flex; align-items:center; gap:7px; }
+.pfl { flex:1; height:0.5px; background:var(--gold); opacity:0.25; }
+.pft { font-family:'Cormorant SC',serif; font-size:6.5px; letter-spacing:0.13em; color:var(--muted); text-align:center; white-space:nowrap; }
+.pn { position:absolute; bottom:8mm; left:50%; transform:translateX(-50%); font-family:'Cinzel',serif; font-size:7px; color:var(--gold); letter-spacing:0.2em; }
 
-ul{
-    padding-left:20px;
-}
-
-.resource{
-    display:flex;
-    gap:25px;
-    align-items:flex-start;
-}
-
-.avatar{
-    min-width:90px;
-    height:90px;
-    border-radius:50%;
-    background:#bbb;
-}
-
-.resource h4{
-    font-size:1.4rem;
-    margin-bottom:5px;
-}
-
-.footer{
-    text-align:center;
-    padding:40px;
-    background:#c9c3b8;
-}
-
-.small{
-    font-size:0.95rem;
-}
-
-@media(max-width:768px){
-
-    .title{
-        font-size:2.5rem;
-    }
-
-    .college{
-        font-size:1.5rem;
-    }
-
-    h2{
-        font-size:2.2rem;
-    }
-
-    .resource{
-        flex-direction:column;
-        align-items:center;
-        text-align:center;
-    }
-
-}
-
+/* Back cover */
+#back { display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--forest); padding:14mm; }
+.bk-orn { color:var(--gold); font-size:20px; letter-spacing:0.3em; text-align:center; margin-bottom:6mm; font-family:'EB Garamond',serif; }
+.bk-t { font-family:'Cinzel',serif; font-size:13px; color:var(--cream); letter-spacing:0.13em; text-align:center; text-transform:uppercase; line-height:1.85; }
+.bk-s { font-family:'EB Garamond',serif; font-style:italic; font-size:13px; color:var(--gold-pale); text-align:center; margin-top:4mm; line-height:1.7; }
+.bk-r { width:75mm; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); margin:6mm auto; }
+.bk-d { font-family:'Cormorant SC',serif; font-size:8.5px; letter-spacing:0.17em; color:var(--gold-pale); text-align:center; text-transform:uppercase; line-height:2.3; }
+.bk-reg { margin-top:6mm; padding:4.5mm 9mm; border:0.5px solid rgba(184,146,42,0.38); text-align:center; }
+.bk-reg p { font-family:'EB Garamond',serif; font-size:11px; color:var(--gold-pale); line-height:1.85; }
+.bk-reg strong { color:var(--gold-light); font-style:normal; }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
+<!-- ════════ PAGE 1 — COVER ════════ -->
+<div class="page" id="cover">
+  <div class="pb">
+    <svg class="cn tl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn tr" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn bl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn br" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+  </div>
 
-<section class="hero">
+  <div class="cv-top">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:7px;">
+      <div class="seal">SRM<br>GROUP</div>
+      <div>
+        <div class="cn-name">SRM Valliammai Engineering College (Autonomous)</div>
+        <div class="cn-sub">Kattankulathur, Chennai · Anna University · NAAC A-Grade · NBA · AICTE</div>
+      </div>
+      <div class="seal">SRM<br>VEC</div>
+    </div>
+  </div>
 
-<div class="logo-row">
-    <div class="logo">SRM</div>
-    <div class="logo">ENG</div>
+  <div class="gr"></div>
+
+  <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:10.5px;letter-spacing:0.11em;color:var(--muted);text-align:center;text-transform:uppercase;margin:3mm 0 1.5mm;">The Department of English cordially presents</div>
+  <div class="orn" style="font-size:15px;margin:1.5mm 0;">✦ ✦ ✦</div>
+  <div class="cv-disc">National Level Five-Day Faculty Development Programme</div>
+  <div class="gr-sm"></div>
+
+  <div class="cv-title">
+    Communication,<br><span>Critical Thinking</span><br>&amp; Classroom Engagement
+  </div>
+
+  <div class="gr-sm"></div>
+  <div class="orn" style="font-size:11px;letter-spacing:0.38em;">— ✦ —</div>
+
+  <div class="cv-meta">
+    <div class="mg">
+      <div class="mi"><span class="ml">Dates</span><div class="mv">1st – 5th June 2026</div></div>
+      <div class="mdiv"></div>
+      <div class="mi"><span class="ml">Time</span><div class="mv">6:00 pm – 7:00 pm IST</div></div>
+      <div class="mdiv"></div>
+      <div class="mi"><span class="ml">Platform</span><div class="mv">Microsoft Teams</div></div>
+    </div>
+  </div>
+
+  <div class="cv-fee">Registration Fee &nbsp;<span>Rs. 200 /-</span></div>
+
+  <div class="cv-dept">
+    <p><strong>Department of English</strong><br>SRM Valliammai Engineering College (Autonomous), Kattankulathur, Chennai<br><em>Empowering Educators · Elevating Classrooms · Enriching Minds</em></p>
+  </div>
 </div>
 
-<div class="college">
-    SRM Valliammai Engineering College (Autonomous), Chennai
+
+<!-- ════════ PAGE 2 — PATRONS + ABOUT COLLEGE + ABOUT DEPT + ABOUT FDP ════════ -->
+<div class="page">
+  <div class="pb">
+    <svg class="cn tl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn tr" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn bl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn br" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+  </div>
+  <div class="ip">
+
+    <!-- PATRONS -->
+    <div class="pat">
+      <div class="pat-title">Patrons of the Programme</div>
+      <div class="pat-grid">
+        <div>
+          <div class="pat-ch">Management</div>
+          <div class="pat-n">Dr. Ravi Pachamoothoo <span>— Chairman, SRM Group</span></div>
+          <div class="pat-n">Mrs. R. Padma Priya <span>— Vice Chairman, SRM VEC</span></div>
+          <div class="pat-n">Ms. Harini Ravi <span>— Correspondent, SRM VEC</span></div>
+        </div>
+        <div class="pdiv"></div>
+        <div>
+          <div class="pat-ch">Academic Leadership</div>
+          <div class="pat-n">Dr. B. Chidhambara Rajan <span>— Director</span></div>
+          <div class="pat-n">Dr. M. Murugan <span>— Principal</span></div>
+          <div class="pat-n">Dr. S. Visalakshi <span>— Vice Principal</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT COLLEGE -->
+    <div class="sh">
+      <span class="lbl">Institutional Profile</span>
+      <div class="ttl">About SRM Valliammai Engineering College</div>
+      <div class="orn-line"><div class="ln"></div><div class="dm"></div><div class="ln"></div></div>
+    </div>
+    <p class="bt dc">SRM Valliammai Engineering College (Autonomous), established in 1999 and located at Kattankulathur near Chennai, is a premier institution under the SRM Group. Affiliated to Anna University and approved by AICTE, it holds NAAC A-grade and NBA accreditation along with ISO 9001:2015 certification. Spread over 13.35 acres, the campus offers well-equipped classrooms, advanced laboratories, a spacious library, and hostel facilities. The college is sponsored by the Valliammai Society, founded by Dr. T. R. Paarivendhar in honour of his mother, Tmt. R. Valliammai, whose nurturing ideals remain the moral cornerstone of the institution's mission. Offering eleven undergraduate and eight postgraduate programmes — supported by over 300 qualified faculty — the college maintains a strong placement record, attracting recruiters such as TCS, Cognizant, Accenture, and IBM.</p>
+
+    <div class="gr"></div>
+
+    <!-- ABOUT DEPT + ABOUT FDP — two columns -->
+    <div class="two">
+      <div>
+        <div class="ch">About the Department</div>
+        <p class="bt dc">The Department of English is committed to imparting quality education and enhancing student communication through innovative, learner-centred pedagogy. Students are trained in Listening, Speaking, Reading, and Writing skills, with particular attention to students from regional-medium backgrounds. The department maintains a modern language laboratory and regularly organises workshops, FDPs, literary events, and skill-based programmes to enrich academic engagement across the institution.</p>
+      </div>
+      <div class="crule"></div>
+      <div>
+        <div class="ch">About the FDP</div>
+        <p class="bt dc">This five-day FDP addresses the evolving needs of English educators by introducing innovative, technology-integrated pedagogical methods. Sessions will cover evolving assessment patterns, research writing and publication, creative content development, practical applications of AI in language teaching, and active learning models such as flipped classrooms — equipping participants with both theoretical foundations and hands-on, immediately applicable tools to transform their classrooms and research outputs.</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="pf"><div class="pfl"></div><div class="pft">Communication, Critical Thinking &amp; Classroom Engagement · National Level FDP · June 2026</div><div class="pfl"></div></div>
+  <div class="pn">— 2 —</div>
 </div>
 
-<div class="department">
-    The Department of English organises
+
+<!-- ════════ PAGE 3 — OBJECTIVES + RESOURCE PERSONS + SCHEDULE + COMMITTEE + REGISTRATION ════════ -->
+<div class="page">
+  <div class="pb">
+    <svg class="cn tl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn tr" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn bl" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+    <svg class="cn br" viewBox="0 0 16 16"><path d="M1.5 8 L1.5 1.5 L8 1.5" stroke="#b8922a" stroke-width="0.9" fill="none"/><circle cx="1.5" cy="1.5" r="1.5" fill="#b8922a"/></svg>
+  </div>
+  <div class="ip">
+
+    <!-- OBJECTIVES + RESOURCE PERSONS — two columns -->
+    <div style="display:grid;grid-template-columns:1fr 0.5px 1fr;gap:0 6mm;margin-bottom:3.5mm;">
+      <div>
+        <div class="sh" style="text-align:left;margin-bottom:3mm;">
+          <span class="lbl" style="text-align:left;">Programme Goals</span>
+          <div class="ttl" style="font-size:14px;text-align:left;">Objectives</div>
+        </div>
+        <div class="og" style="grid-template-columns:1fr;gap:2.5mm;">
+          <div class="oc">
+            <div class="on">I</div>
+            <div class="ot">Critical Thinking</div>
+            <p class="ox">Equip educators with critical thinking strategies that promote analytical and reflective learning among students.</p>
+          </div>
+          <div class="oc">
+            <div class="on">II</div>
+            <div class="ot">Pedagogical Practices</div>
+            <p class="ox">Familiarise participants with contemporary pedagogical practices and interactive ELT methodologies.</p>
+          </div>
+          <div class="oc">
+            <div class="on">III</div>
+            <div class="ot">Learner-Centred Methods</div>
+            <p class="ox">Promote interactive and learner-centred teaching methods that place student agency at the heart of the classroom.</p>
+          </div>
+          <div class="oc">
+            <div class="on">IV</div>
+            <div class="ot">Classroom Engagement</div>
+            <p class="ox">Introduce innovative engagement techniques that encourage active participation and collaborative learning.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="crule"></div>
+
+      <div>
+        <div class="sh" style="text-align:left;margin-bottom:3mm;">
+          <span class="lbl" style="text-align:left;">Distinguished Speakers</span>
+          <div class="ttl" style="font-size:14px;text-align:left;">Resource Persons</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2.5mm;">
+          <div class="cc" style="border:0.5px solid rgba(184,146,42,0.38);background:var(--parchment);padding:3mm 4mm;">
+            <div style="font-family:'EB Garamond',serif;font-size:12px;font-weight:600;color:var(--forest);">Dr. Beena P</div>
+            <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:9.5px;color:var(--muted);line-height:1.5;">Associate Professor<br>SDNB Vaishnav College for Women, Chrompet</div>
+          </div>
+          <div class="cc" style="border:0.5px solid rgba(184,146,42,0.38);background:var(--parchment);padding:3mm 4mm;">
+            <div style="font-family:'EB Garamond',serif;font-size:12px;font-weight:600;color:var(--forest);">Dr. A. Poongodi</div>
+            <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:9.5px;color:var(--muted);line-height:1.5;">Associate Professor<br>SRM Institute of Science &amp; Technology, Potheri</div>
+          </div>
+          <div class="cc" style="border:0.5px solid rgba(184,146,42,0.38);background:var(--parchment);padding:3mm 4mm;">
+            <div style="font-family:'EB Garamond',serif;font-size:12px;font-weight:600;color:var(--forest);">Dr. Ganesh Nagorao Chilke</div>
+            <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:9.5px;color:var(--muted);line-height:1.5;">Assistant Professor<br>VIT Chennai</div>
+          </div>
+          <div class="cc" style="border:0.5px solid rgba(184,146,42,0.38);background:var(--parchment);padding:3mm 4mm;">
+            <div style="font-family:'EB Garamond',serif;font-size:12px;font-weight:600;color:var(--forest);">Dr. Shaik Umama</div>
+            <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:9.5px;color:var(--muted);line-height:1.5;">Assistant Professor<br>B.S. Abdur Rahman Crescent Institute</div>
+          </div>
+          <div class="cc" style="border:0.5px solid rgba(184,146,42,0.38);background:var(--parchment);padding:3mm 4mm;">
+            <div style="font-family:'EB Garamond',serif;font-size:12px;font-weight:600;color:var(--forest);">Dr. A. Ganesan</div>
+            <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:9.5px;color:var(--muted);line-height:1.5;">Associate Professor<br>Ramakrishna Mission Vivekananda College</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gr"></div>
+
+    <!-- SCHEDULE -->
+    <div class="sh"><span class="lbl">Daily Sessions</span><div class="ttl" style="font-size:14px;">Programme Schedule</div><div class="orn-line"><div class="ln"></div><div class="dm"></div><div class="ln"></div></div></div>
+    <table class="st">
+      <thead><tr><th style="width:16%;">Day</th><th style="width:33%;">Topic</th><th style="width:51%;">Resource Person</th></tr></thead>
+      <tbody>
+        <tr><td class="dc2">Day I · 1 Jun</td><td><em style="color:var(--muted);">To Be Announced</em></td><td>Dr. Beena P <span style="font-size:9px;font-style:italic;color:var(--muted);">· SDNB Vaishnav College for Women</span></td></tr>
+        <tr><td class="dc2">Day II · 2 Jun</td><td><em style="color:var(--muted);">To Be Announced</em></td><td>Dr. A. Poongodi <span style="font-size:9px;font-style:italic;color:var(--muted);">· SRM IST, Potheri</span></td></tr>
+        <tr><td class="dc2">Day III · 3 Jun</td><td><em style="color:var(--muted);">To Be Announced</em></td><td>Dr. Ganesh Nagorao Chilke <span style="font-size:9px;font-style:italic;color:var(--muted);">· VIT Chennai</span></td></tr>
+        <tr><td class="dc2">Day IV · 4 Jun</td><td><em style="color:var(--muted);">To Be Announced</em></td><td>Dr. Shaik Umama <span style="font-size:9px;font-style:italic;color:var(--muted);">· B.S. Abdur Rahman Crescent Institute</span></td></tr>
+        <tr><td class="dc2">Day V · 5 Jun</td><td><em style="color:var(--muted);">To Be Announced</em></td><td>Dr. A. Ganesan <span style="font-size:9px;font-style:italic;color:var(--muted);">· Ramakrishna Mission Vivekananda College</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="gr"></div>
+
+    <!-- COMMITTEE + REGISTRATION — two columns -->
+    <div style="display:grid;grid-template-columns:1fr 0.5px 1fr;gap:0 6mm;">
+      <div>
+        <div class="sh" style="text-align:left;margin-bottom:3mm;"><span class="lbl" style="text-align:left;">Organisational Structure</span><div class="ttl" style="font-size:14px;text-align:left;">FDP Committee</div></div>
+        <div style="display:flex;flex-direction:column;gap:2.5mm;">
+          <div class="cc"><div class="cr">Conveners</div><div class="cn2">Dr. M. Chithra <span>— HoD, Dept. of English</span><br>Ms. S. Roshan Fathima <span>— AP (O.G)</span></div></div>
+          <div class="cc"><div class="cr">Organising Secretary</div><div class="cn2">Dr. Sheeba Manodh <span>— AP (Sel.G)</span></div></div>
+          <div class="cc"><div class="cr">Treasurer</div><div class="cn2">Dr. G. Suganya <span>— AP (O.G)</span></div></div>
+          <div class="cc"><div class="cr">Online Event Coordinator</div><div class="cn2">Mr. W. S. Andrew Veda <span>— AP (O.G)</span></div></div>
+          <div class="cc"><div class="cr">Organising Committee</div><div class="cn2">Dr. R. Geetha <span>— AP (Sr.G)</span><br>Dr. V. Jayanthi <span>— AP (Sr.G)</span><br>Dr. M. Arthi <span>— AP (Sr.G)</span><br>Dr. Padmapriya P <span>— AP (O.G)</span></div></div>
+        </div>
+      </div>
+
+      <div class="crule"></div>
+
+      <div>
+        <div class="sh" style="text-align:left;margin-bottom:3mm;"><span class="lbl" style="text-align:left;">How to Participate</span><div class="ttl" style="font-size:14px;text-align:left;">Registration</div></div>
+        <div class="rb">
+          <div class="rr"><span class="rl2">Fee</span><span class="rv">Rs. 200 /- per participant</span></div>
+          <div class="rr"><span class="rl2">Platform</span><span class="rv">Microsoft Teams</span></div>
+          <div class="rr"><span class="rl2">Feedback</span><span class="rv">Google Forms (daily)</span></div>
+          <div class="rr"><span class="rl2">Register at</span><span class="rv" style="font-size:9px;word-break:break-all;">forms.gle/QvUUXZ98M8pqZqvJ8</span></div>
+        </div>
+        <div class="pb2" style="margin-top:2.5mm;">
+          <div class="pb2-t">Payment Details</div>
+          <div class="pr"><span class="pl">Account Holder</span><span class="pv">Valliammai Engineering College</span></div>
+          <div class="pr"><span class="pl">Bank</span><span class="pv">City Union Bank</span></div>
+          <div class="pr"><span class="pl">Account No.</span><span class="pv">117109000031450</span></div>
+          <div class="pr"><span class="pl">IFSC</span><span class="pv">CIUB0000117</span></div>
+          <div class="pr"><span class="pl">Branch</span><span class="pv">Tambaram (Extn. Counter)</span></div>
+          <div class="pr"><span class="pl">MICR No.</span><span class="pv">600054011</span></div>
+        </div>
+        <div class="cert" style="margin-top:2.5mm;">
+          <p>E-Certificates awarded to participants attending all five days of the programme.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="pf"><div class="pfl"></div><div class="pft">Communication, Critical Thinking &amp; Classroom Engagement · National Level FDP · June 2026</div><div class="pfl"></div></div>
+  <div class="pn">— 3 —</div>
 </div>
 
-<div class="title">
-    COMMUNICATION, CRITICAL THINKING AND CLASSROOM ENGAGEMENT
-</div>
 
-<div class="subtitle">
-    A National Level Five-Day Faculty Development Programme (FDP)
-</div>
-
-<div class="meta">
-    1st – 5th June 2026 | 6:30 p.m. – 7:30 p.m. | Microsoft Teams
-</div>
-
-<div class="meta">
-    Registration Fee: Rs. 200
-</div>
-
-<a href="#" class="btn">
-    Register Here
-</a>
-
-</section>
-
-<!-- ABOUT COLLEGE -->
-
-<section>
-
-<h2>About SRM Valliammai Engineering College</h2>
-
-<div class="content">
-
-<p>
-SRM Valliammai Engineering College (Autonomous), established in 1999, is a premier institution under the SRM Group of Educational Institutions. Located at Kattankulathur near Chennai, the institution is committed to academic excellence, innovation, and holistic student development.
-</p>
-
-<br>
-
-<p>
-The college offers state-of-the-art infrastructure, well-equipped laboratories, a modern library, and an academically vibrant environment that supports teaching, research, and professional growth.
-</p>
-
-<br>
-
-<p>
-With a strong emphasis on ethical values, employability skills, and learner-centred education, the institution continues to empower future professionals across disciplines.
-</p>
-
-</div>
-
-</section>
-
-<!-- ABOUT DEPARTMENT -->
-
-<section>
-
-<h2>About the Department of English</h2>
-
-<div class="content">
-
-<p>
-The Department of English aims to enhance communication skills, critical thinking, and language proficiency among students through innovative pedagogical practices and learner-centred methodologies.
-</p>
-
-<br>
-
-<p>
-The department actively organizes workshops, FDPs, literary events, and skill-based programmes to enrich academic engagement and professional development among educators and learners.
-</p>
-
-</div>
-
-</section>
-
-<!-- ABOUT FDP -->
-
-<section>
-
-<h2>About the FDP</h2>
-
-<div class="content">
-
-<p>
-The proposed National Level Faculty Development Programme titled <strong>“Communication, Critical Thinking and Classroom Engagement”</strong> aims to strengthen essential teaching competencies required in contemporary English Language Teaching (ELT).
-</p>
-
-<br>
-
-<p>
-The FDP focuses on communication effectiveness, critical thinking strategies, interactive classroom engagement, learner-centred pedagogies, and innovative instructional practices.
-</p>
-
-<br>
-
-<p>
-The programme also serves as a continuation of the successful national-level FDP conducted by the Department during the previous semester, which witnessed enthusiastic participation from educators across India.
-</p>
-
-</div>
-
-</section>
-
-<!-- OBJECTIVES -->
-
-<section>
-
-<h2>Objectives of the FDP</h2>
-
-<div class="content grid">
-
-<div class="card">
-<h3>Communication Skills</h3>
-<p>
-Enhance effective communication skills required for dynamic and learner-centred English language classrooms.
-</p>
-</div>
-
-<div class="card">
-<h3>Critical Thinking</h3>
-<p>
-Equip educators with strategies that promote analytical and reflective learning among students.
-</p>
-</div>
-
-<div class="card">
-<h3>Pedagogical Innovation</h3>
-<p>
-Familiarize participants with contemporary pedagogical practices and interactive teaching methodologies.
-</p>
-</div>
-
-<div class="card">
-<h3>Classroom Engagement</h3>
-<p>
-Introduce innovative classroom engagement techniques that encourage active participation and collaborative learning.
-</p>
-</div>
-
-</div>
-
-</section>
-
-<!-- RESOURCE PERSONS -->
-
-<section>
-
-<h2>Resource Persons</h2>
-
-<div class="content grid">
-
-<div class="card resource">
-<div class="avatar"></div>
-<div>
-<h4>Dr. Beena P</h4>
-<p>Associate Professor</p>
-<p>SDNB Vaishnav College for Women, Chrompet</p>
-<p><em>Topic Placeholder</em></p>
-</div>
-</div>
-
-<div class="card resource">
-<div class="avatar"></div>
-<div>
-<h4>Dr. A. Poongodi</h4>
-<p>Associate Professor</p>
-<p>SRM IST, Potheri</p>
-<p><em>Topic Placeholder</em></p>
-</div>
-</div>
-
-<div class="card resource">
-<div class="avatar"></div>
-<div>
-<h4>Dr. Ganesh Nagorao Chilke</h4>
-<p>Assistant Professor</p>
-<p>VIT Chennai</p>
-<p><em>Topic Placeholder</em></p>
-</div>
-</div>
-
-<div class="card resource">
-<div class="avatar"></div>
-<div>
-<h4>Dr. Shaik Umama</h4>
-<p>Assistant Professor</p>
-<p>B.S. Abdur Rahman Crescent Institute</p>
-<p><em>Topic Placeholder</em></p>
-</div>
-</div>
-
-<div class="card resource">
-<div class="avatar"></div>
-<div>
-<h4>Dr. A. Ganesan</h4>
-<p>Associate Professor</p>
-<p>Ramakrishna Mission Vivekananda College</p>
-<p><em>Topic Placeholder</em></p>
-</div>
-</div>
-
-</div>
-
-</section>
-
-<!-- COMMITTEE -->
-
-<section>
-
-<h2>FDP Committee Members</h2>
-
-<div class="content grid">
-
-<div class="card">
-<h3>Conveners</h3>
-<ul>
-<li>Dr. M. Chithra – HoD</li>
-<li>Ms. S. Roshan Fathima – AP / (O.G)</li>
-</ul>
-</div>
-
-<div class="card">
-<h3>Organising Secretary</h3>
-<p>Dr. Sheeba Manodh – AP / (Sel.G)</p>
-</div>
-
-<div class="card">
-<h3>Treasurer</h3>
-<p>Dr. G. Suganya – AP / (O.G)</p>
-</div>
-
-<div class="card">
-<h3>Online Event Coordinator</h3>
-<p>Mr. W. S Andrew Veda – AP / (O.G)</p>
-</div>
-
-<div class="card">
-<h3>Organising Committee</h3>
-<ul>
-<li>Dr. R. Geetha</li>
-<li>Dr. V. Jayanthi</li>
-<li>Dr. M. Arthi</li>
-<li>Dr. Padmapriya P</li>
-</ul>
-</div>
-
-</div>
-
-</section>
-
-<!-- REGISTRATION -->
-
-<section>
-
-<h2>Registration</h2>
-
-<div class="content">
-
-<div class="card">
-
-<p><strong>Registration Fee:</strong> Rs. 200</p>
-
-<p><strong>Platform:</strong> Microsoft Teams</p>
-
-<p><strong>Feedback:</strong> Google Forms will be shared daily.</p>
-
-<br>
-
-<p>
-E-certificates will be provided to participants who attend all five days of the FDP.
-</p>
-
-<br>
-
-<a href="#" class="btn">
-Register Now
-</a>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- FOOTER -->
-
-<div class="footer">
-
-<h2 style="margin-bottom:10px;">
-Communication, Critical Thinking and Classroom Engagement
-</h2>
-
-<p class="small">
-Department of English | SRM Valliammai Engineering College
-</p>
-
-<p class="small">
-National Level Five-Day FDP | June 2026
-</p>
-
+<!-- ════════ PAGE 4 — BACK COVER ════════ -->
+<div class="page" id="back">
+  <div class="pb" style="border-color:rgba(184,146,42,0.42);"></div>
+  <div class="bk-orn">✦ ✦ ✦</div>
+  <div class="bk-t">National Level Five-Day<br>Faculty Development Programme</div>
+  <div class="bk-s">Communication, Critical Thinking<br>&amp; Classroom Engagement</div>
+  <div class="bk-r"></div>
+  <div class="bk-d">
+    1st – 5th June 2026 &nbsp;·&nbsp; 6:00 pm – 7:00 pm IST<br>
+    Microsoft Teams &nbsp;·&nbsp; Registration Fee: Rs. 200 /-
+  </div>
+  <div class="bk-r" style="width:45mm;"></div>
+  <div class="bk-reg">
+    <p>Register at &nbsp;<strong>https://forms.gle/QvUUXZ98M8pqZqvJ8</strong><br><em>E-Certificates awarded to participants attending all five days</em></p>
+  </div>
+  <div class="bk-r"></div>
+  <div class="bk-d">
+    Organised by · Department of English<br>
+    SRM Valliammai Engineering College (Autonomous)<br>
+    Kattankulathur, Chennai – 603 203<br>
+    Affiliated to Anna University · NAAC A-Grade · NBA · AICTE
+  </div>
+  <div class="bk-r" style="width:25mm;margin:5mm auto;"></div>
+  <div class="bk-orn" style="font-size:12px;opacity:0.45;">✦</div>
 </div>
 
 </body>
