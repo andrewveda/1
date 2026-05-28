@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Crown — British Monarchs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --crimson-deeper: #350A0A;
+    --gold:           #C9922A;
+    --gold-pale:      #F7EDCC;
+    --gold-faint:     #FBF5E6;
+    --parchment:      #FAF6ED;
+    --ink:            #1C120A;
+    --ink-muted:      #5C4A38;
+    --ink-faint:      #9E8A72;
+    --border:         rgba(180,130,50,0.25);
+    --border-strong:  rgba(180,130,50,0.55);
+    --sans:    'EB Garamond', Georgia, serif;
+    --display: 'Cinzel', Georgia, serif;
+    --safe-top:    env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html { background: var(--parchment); }
+
+  body {
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--parchment);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: var(--crimson-deeper);
+    padding: calc(16px + var(--safe-top)) 20px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .app-header::after {
+    content: '';
+    display: block;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 6px, transparent 6px, transparent 10px);
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+  }
+  .header-ornament {
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: var(--display);
+    margin-bottom: 5px;
+    opacity: 0.75;
+  }
+  .app-title {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--gold-pale);
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+  .app-subtitle {
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(230,200,140,0.65);
+    margin-top: 4px;
+  }
+
+  /* ── Scroll area ── */
+  .scroll-area {
+    padding: 18px 14px calc(40px + var(--safe-bottom));
+  }
+
+  /* ── House section ── */
+  .house-section { margin-bottom: 28px; }
+
+  .house-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .house-swatch {
+    width: 11px; height: 11px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+  .house-title {
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: #4A0E0E;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .house-years {
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  .ornament-divider {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gold);
+    opacity: 0.45;
+    margin: 2px 0 8px;
+    letter-spacing: 0.3em;
+  }
+
+  /* ── Monarch grid ── */
+  .monarch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Each monarch is an <a> tag styled as a card */
+  .monarch-link {
+    background: #FFFDF7;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s, border-color 0.12s;
+    min-height: 72px;
+  }
+  .monarch-link:active {
+    background: var(--gold-faint);
+    border-color: var(--gold);
+  }
+
+  .btn-stripe {
+    height: 4px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .btn-body {
+    padding: 8px 10px 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .m-name {
+    font-family: var(--display);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+  .m-reign {
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .m-arrow {
+    position: absolute;
+    bottom: 7px;
+    right: 8px;
+    font-size: 13px;
+    color: var(--gold);
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-ornament">&#x2731; Dieu et mon droit &#x2731;</div>
+  <div class="app-title">The Crown</div>
+  <div class="app-subtitle">Monarchs of England &amp; Great Britain</div>
+</header>
+
+<div class="scroll-area" id="monarch-list"></div>
+
+<script>
+// ── Add your links in the `url` field for each monarch ──
+const HOUSES = [
+  {
+    name: "Saxon & Viking", years: "827–1066", color: "#7A6040",
+    monarchs: [
+      { n:"Æthelstan",          r:"927–939",        url:"#" },
+      { n:"Edmund I",           r:"939–946",         url:"#" },
+      { n:"Eadred",             r:"946–955",         url:"#" },
+      { n:"Eadwig",             r:"955–959",         url:"#" },
+      { n:"Edgar the Peaceful", r:"959–975",         url:"#" },
+      { n:"Edward the Martyr",  r:"975–978",         url:"#" },
+      { n:"Æthelred the Unready",r:"978–1013",       url:"#" },
+      { n:"Sweyn Forkbeard",    r:"1013–1014",       url:"#" },
+      { n:"Æthelred (restored)",r:"1014–1016",       url:"#" },
+      { n:"Edmund Ironside",    r:"1016",            url:"#" },
+      { n:"Cnut",               r:"1016–1035",       url:"#" },
+      { n:"Harold Harefoot",    r:"1035–1040",       url:"#" },
+      { n:"Harthacnut",         r:"1040–1042",       url:"#" },
+      { n:"Edward the Confessor",r:"1042–1066",      url:"#" },
+      { n:"Harold II",          r:"1066",            url:"#" },
+    ]
+  },
+  {
+    name: "Norman", years: "1066–1154", color: "#4A3070",
+    monarchs: [
+      { n:"William I",  r:"1066–1087", url:"#" },
+      { n:"William II", r:"1087–1100", url:"#" },
+      { n:"Henry I",    r:"1100–1135", url:"#" },
+      { n:"Stephen",    r:"1135–1154", url:"#" },
+    ]
+  },
+  {
+    name: "Plantagenet", years: "1154–1399", color: "#1A5C32",
+    monarchs: [
+      { n:"Henry II",   r:"1154–1189", url:"#" },
+      { n:"Richard I",  r:"1189–1199", url:"#" },
+      { n:"John",       r:"1199–1216", url:"#" },
+      { n:"Henry III",  r:"1216–1272", url:"#" },
+      { n:"Edward I",   r:"1272–1307", url:"#" },
+      { n:"Edward II",  r:"1307–1327", url:"#" },
+      { n:"Edward III", r:"1327–1377", url:"#" },
+      { n:"Richard II", r:"1377–1399", url:"#" },
+    ]
+  },
+  {
+    name: "Lancaster", years: "1399–1461", color: "#7B1D1D",
+    monarchs: [
+      { n:"Henry IV", r:"1399–1413", url:"#" },
+      { n:"Henry V",  r:"1413–1422", url:"#" },
+      { n:"Henry VI", r:"1422–1461", url:"#" },
+    ]
+  },
+  {
+    name: "York", years: "1461–1485", color: "#1C3F7A",
+    monarchs: [
+      { n:"Edward IV",   r:"1461–1483", url:"#" },
+      { n:"Edward V",    r:"1483",      url:"#" },
+      { n:"Richard III", r:"1483–1485", url:"#" },
+    ]
+  },
+  {
+    name: "Tudor", years: "1485–1603", color: "#8B0000",
+    monarchs: [
+      { n:"Henry VII",      r:"1485–1509", url:"#" },
+      { n:"Henry VIII",     r:"1509–1547", url:"#" },
+      { n:"Edward VI",      r:"1547–1553", url:"#" },
+      { n:"Lady Jane Grey", r:"1553",      url:"#" },
+      { n:"Mary I",         r:"1553–1558", url:"#" },
+      { n:"Elizabeth I",    r:"1558–1603", url:"#" },
+    ]
+  },
+  {
+    name: "Stuart", years: "1603–1714", color: "#5C2D7A",
+    monarchs: [
+      { n:"James I",              r:"1603–1625", url:"#" },
+      { n:"Charles I",            r:"1625–1649", url:"#" },
+      { n:"The Commonwealth",     r:"1649–1660", url:"#" },
+      { n:"Charles II",           r:"1660–1685", url:"#" },
+      { n:"James II",             r:"1685–1688", url:"#" },
+      { n:"William III & Mary II",r:"1689–1702", url:"#" },
+      { n:"Anne",                 r:"1702–1714", url:"#" },
+    ]
+  },
+  {
+    name: "Hanover", years: "1714–1901", color: "#3D5C1A",
+    monarchs: [
+      { n:"George I",   r:"1714–1727", url:"#" },
+      { n:"George II",  r:"1727–1760", url:"#" },
+      { n:"George III", r:"1760–1820", url:"#" },
+      { n:"George IV",  r:"1820–1830", url:"#" },
+      { n:"William IV", r:"1830–1837", url:"#" },
+      { n:"Victoria",   r:"1837–1901", url:"#" },
+    ]
+  },
+  {
+    name: "Saxe-Coburg & Windsor", years: "1901–present", color: "#1A3A5C",
+    monarchs: [
+      { n:"Edward VII",  r:"1901–1910",    url:"#" },
+      { n:"George V",    r:"1910–1936",    url:"#" },
+      { n:"Edward VIII", r:"1936",         url:"#" },
+      { n:"George VI",   r:"1936–1952",    url:"#" },
+      { n:"Elizabeth II",r:"1952–2022",    url:"#" },
+      { n:"Charles III", r:"2022–present", url:"#" },
+    ]
+  },
+];
+
+function buildList() {
+  const container = document.getElementById('monarch-list');
+  HOUSES.forEach(house => {
+    const section = document.createElement('div');
+    section.className = 'house-section';
+    section.innerHTML = `
+      <div class="house-header">
+        <div class="house-swatch" style="background:${house.color}"></div>
+        <div class="house-title">${house.name}</div>
+        <div class="house-years">${house.years}</div>
+      </div>
+      <div class="ornament-divider">— ✶ —</div>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'monarch-grid';
+
+    house.monarchs.forEach(m => {
+      const a = document.createElement('a');
+      a.className = 'monarch-link';
+      a.href = m.url;
+      a.setAttribute('aria-label', `${m.n}, reigned ${m.r}`);
+      a.innerHTML = `
+        <div class="btn-stripe" style="background:${house.color}"></div>
+        <div class="btn-body">
+          <div class="m-name">${m.n}</div>
+          <div class="m-reign">${m.r}</div>
+        </div>
+        <span class="m-arrow" aria-hidden="true">›</span>
+      `;
+      grid.appendChild(a);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}
+
+buildList();
+</script>
+</body>
+</html>
