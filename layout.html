@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Literary Index — UGC NET English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --crimson-deeper: #350A0A;
+    --crimson-dark:   #4A0E0E;
+    --gold:           #C9922A;
+    --gold-pale:      #F7EDCC;
+    --gold-faint:     #FBF5E6;
+    --parchment:      #FAF6ED;
+    --ink:            #1C120A;
+    --ink-muted:      #5C4A38;
+    --ink-faint:      #9E8A72;
+    --border:         rgba(180,130,50,0.25);
+    --border-strong:  rgba(180,130,50,0.55);
+    --sans:    'EB Garamond', Georgia, serif;
+    --display: 'Cinzel', Georgia, serif;
+    --safe-top:    env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { background: var(--parchment); }
+  body {
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--parchment);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: var(--crimson-deeper);
+    padding: calc(14px + var(--safe-top)) 16px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--gold);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .app-header::after {
+    content: '';
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 6px, transparent 6px, transparent 10px);
+    position: absolute; bottom: 0; left: 0; right: 0;
+    display: block;
+  }
+  .header-ornament { font-size: 10px; letter-spacing: 0.28em; color: var(--gold); font-family: var(--display); opacity: 0.75; margin-bottom: 4px; }
+  .app-title { font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--gold-pale); letter-spacing: 0.07em; line-height: 1; }
+  .app-subtitle { font-style: italic; font-size: 12px; color: rgba(230,200,140,0.65); margin-top: 4px; }
+
+  /* ── Search ── */
+  .search-wrap {
+    background: var(--crimson-darker, #2A0808);
+    padding: 10px 14px;
+    position: sticky; top: calc(84px + var(--safe-top)); z-index: 19;
+    border-bottom: 1px solid var(--border-strong);
+    background: #2A0808;
+  }
+  .search-input {
+    width: 100%;
+    background: rgba(255,245,220,0.08);
+    border: 1px solid rgba(201,146,42,0.4);
+    border-radius: 8px;
+    padding: 9px 14px 9px 36px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--gold-pale);
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .search-input::placeholder { color: rgba(230,200,140,0.4); font-style: italic; }
+  .search-input:focus { border-color: var(--gold); }
+  .search-icon {
+    position: absolute;
+    left: 26px; top: 50%; transform: translateY(-50%);
+    color: rgba(201,146,42,0.5);
+    font-size: 16px; pointer-events: none;
+  }
+  .search-wrap { position: sticky; top: 0; z-index: 19; }
+
+  /* ── Scroll ── */
+  .scroll-area { padding: 16px 12px calc(40px + var(--safe-bottom)); }
+
+  /* ── Century block ── */
+  .century-block { margin-bottom: 32px; }
+  .century-heading {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold-pale);
+    background: var(--crimson-dark);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+    border-left: 4px solid var(--gold);
+  }
+
+  /* ── Period / movement section ── */
+  .period-section { margin-bottom: 20px; }
+  .period-header {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 8px; padding-bottom: 7px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .period-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.12); }
+  .period-name { font-family: var(--display); font-size: 11.5px; font-weight: 500; letter-spacing: 0.1em; color: var(--crimson-dark); text-transform: uppercase; flex: 1; }
+  .period-years { font-style: italic; font-size: 11px; color: var(--ink-faint); }
+
+  .ornament-divider { text-align: center; font-size: 11px; color: var(--gold); opacity: 0.4; margin: 2px 0 8px; letter-spacing: 0.3em; }
+
+  /* ── Writer grid ── */
+  .writer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+  .writer-link {
+    background: #FFFDF7;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s, border-color 0.12s;
+    min-height: 78px;
+  }
+  .writer-link:active { background: var(--gold-faint); border-color: var(--gold); }
+  .writer-link.hidden { display: none; }
+
+  .w-stripe { height: 3px; width: 100%; flex-shrink: 0; }
+  .w-body { padding: 7px 9px 9px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .w-name { font-family: var(--display); font-size: 12px; font-weight: 500; color: var(--ink); line-height: 1.22; }
+  .w-dates { font-size: 10.5px; color: var(--ink-faint); font-style: italic; }
+  .w-nat {
+    display: inline-block;
+    font-size: 9.5px;
+    font-family: var(--display);
+    letter-spacing: 0.06em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-top: 2px;
+    border: 1px solid;
+    width: fit-content;
+  }
+  .w-work { font-size: 10.5px; color: var(--ink-muted); font-style: italic; margin-top: 2px; line-height: 1.3; }
+  .w-arrow { position: absolute; bottom: 6px; right: 7px; font-size: 12px; color: var(--gold); opacity: 0.55; }
+
+  /* ── No results ── */
+  #no-results { display: none; text-align: center; padding: 40px 20px; font-style: italic; color: var(--ink-faint); font-size: 15px; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-ornament">&#x2731; UGC NET English &#x2731;</div>
+  <div class="app-title">Literary Index</div>
+  <div class="app-subtitle">Major Writers Across All Centuries</div>
+</header>
+
+<div class="search-wrap" style="position:sticky;top:0">
+  <span class="search-icon">&#x2315;</span>
+  <input class="search-input" type="search" id="search" placeholder="Search writer or work…" autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<div class="scroll-area" id="writer-list"></div>
+<div id="no-results">No writers found for that search.</div>
+
+<script>
+const DATA = [
+  {
+    century: "14th Century",
+    periods: [
+      {
+        name: "Middle English Literature", years: "c.1300–1400", color: "#6B5B3E",
+        writers: [
+          { n:"Geoffrey Chaucer",       d:"c.1343–1400", nat:"British",    work:"The Canterbury Tales",            url:"#" },
+          { n:"William Langland",        d:"c.1332–1386", nat:"British",    work:"Piers Plowman",                  url:"#" },
+          { n:"John Gower",              d:"c.1330–1408", nat:"British",    work:"Confessio Amantis",              url:"#" },
+          { n:"Julian of Norwich",       d:"c.1342–1416", nat:"British",    work:"Revelations of Divine Love",     url:"#" },
+          { n:"The Pearl Poet (Anon.)",  d:"fl. c.1380",  nat:"British",    work:"Sir Gawain & the Green Knight",  url:"#" },
+          { n:"John Wycliffe",           d:"c.1320–1384", nat:"British",    work:"English Bible Translation",      url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "15th Century",
+    periods: [
+      {
+        name: "Late Medieval", years: "c.1400–1485", color: "#7A6040",
+        writers: [
+          { n:"Thomas Malory",           d:"c.1415–1471", nat:"British",    work:"Le Morte d'Arthur",              url:"#" },
+          { n:"John Lydgate",            d:"c.1370–1451", nat:"British",    work:"Troy Book",                      url:"#" },
+          { n:"Thomas Hoccleve",         d:"c.1367–1426", nat:"British",    work:"The Regiment of Princes",        url:"#" },
+          { n:"Margery Kempe",           d:"c.1373–1438", nat:"British",    work:"The Book of Margery Kempe",      url:"#" },
+          { n:"William Caxton",          d:"c.1422–1491", nat:"British",    work:"First English Printer/Translator",url:"#" },
+          { n:"François Villon",         d:"c.1431–1474", nat:"French",     work:"Le Testament",                   url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "16th Century",
+    periods: [
+      {
+        name: "Renaissance & Humanism", years: "c.1485–1558", color: "#1A5C32",
+        writers: [
+          { n:"Thomas More",             d:"1478–1535",   nat:"British",    work:"Utopia",                         url:"#" },
+          { n:"Desiderius Erasmus",      d:"1466–1536",   nat:"Dutch",      work:"The Praise of Folly",            url:"#" },
+          { n:"Thomas Wyatt",            d:"1503–1542",   nat:"British",    work:"Sonnets (introduced to England)",url:"#" },
+          { n:"Henry Howard (Surrey)",   d:"1517–1547",   nat:"British",    work:"Blank verse translations",       url:"#" },
+          { n:"John Skelton",            d:"c.1463–1529", nat:"British",    work:"The Bowge of Court",             url:"#" },
+          { n:"William Tyndale",         d:"c.1494–1536", nat:"British",    work:"English New Testament",          url:"#" },
+        ]
+      },
+      {
+        name: "Elizabethan Age", years: "1558–1603", color: "#8B0000",
+        writers: [
+          { n:"Edmund Spenser",          d:"c.1552–1599", nat:"British",    work:"The Faerie Queene",              url:"#" },
+          { n:"Philip Sidney",           d:"1554–1586",   nat:"British",    work:"Astrophil and Stella",           url:"#" },
+          { n:"Christopher Marlowe",     d:"1564–1593",   nat:"British",    work:"Doctor Faustus",                 url:"#" },
+          { n:"William Shakespeare",     d:"1564–1616",   nat:"British",    work:"Hamlet; King Lear; Sonnets",     url:"#" },
+          { n:"Francis Bacon",           d:"1561–1626",   nat:"British",    work:"Essays",                         url:"#" },
+          { n:"Thomas Nashe",            d:"1567–c.1601", nat:"British",    work:"The Unfortunate Traveller",      url:"#" },
+          { n:"Robert Greene",           d:"1558–1592",   nat:"British",    work:"Pandosto",                       url:"#" },
+          { n:"Thomas Kyd",              d:"1558–1594",   nat:"British",    work:"The Spanish Tragedy",            url:"#" },
+          { n:"Michael Drayton",         d:"1563–1631",   nat:"British",    work:"Poly-Olbion",                    url:"#" },
+          { n:"Samuel Daniel",           d:"1562–1619",   nat:"British",    work:"Delia (Sonnets)",                url:"#" },
+          { n:"John Lyly",               d:"1553–1606",   nat:"British",    work:"Euphues",                        url:"#" },
+          { n:"Richard Hooker",          d:"1554–1600",   nat:"British",    work:"Laws of Ecclesiastical Polity",  url:"#" },
+          { n:"Michel de Montaigne",     d:"1533–1592",   nat:"French",     work:"Essays",                         url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "17th Century",
+    periods: [
+      {
+        name: "Jacobean & Caroline", years: "1603–1642", color: "#4A3070",
+        writers: [
+          { n:"John Donne",              d:"1572–1631",   nat:"British",    work:"Songs and Sonnets",              url:"#" },
+          { n:"Ben Jonson",              d:"1572–1637",   nat:"British",    work:"Volpone; The Alchemist",         url:"#" },
+          { n:"George Herbert",          d:"1593–1633",   nat:"British",    work:"The Temple",                     url:"#" },
+          { n:"Thomas Middleton",        d:"1580–1627",   nat:"British",    work:"Women Beware Women",             url:"#" },
+          { n:"John Webster",            d:"c.1580–1634", nat:"British",    work:"The Duchess of Malfi",           url:"#" },
+          { n:"Francis Beaumont",        d:"1584–1616",   nat:"British",    work:"Philaster (with Fletcher)",      url:"#" },
+          { n:"John Fletcher",           d:"1579–1625",   nat:"British",    work:"The Faithful Shepherdess",       url:"#" },
+          { n:"Robert Herrick",          d:"1591–1674",   nat:"British",    work:"Hesperides",                     url:"#" },
+          { n:"Thomas Carew",            d:"c.1595–1640", nat:"British",    work:"Poems",                          url:"#" },
+          { n:"Richard Crashaw",         d:"c.1613–1649", nat:"British",    work:"Steps to the Temple",            url:"#" },
+          { n:"Henry Vaughan",           d:"1621–1695",   nat:"British",    work:"Silex Scintillans",              url:"#" },
+          { n:"Andrew Marvell",          d:"1621–1678",   nat:"British",    work:"To His Coy Mistress",            url:"#" },
+        ]
+      },
+      {
+        name: "Commonwealth & Restoration", years: "1642–1700", color: "#5C2D7A",
+        writers: [
+          { n:"John Milton",             d:"1608–1674",   nat:"British",    work:"Paradise Lost",                  url:"#" },
+          { n:"John Bunyan",             d:"1628–1688",   nat:"British",    work:"The Pilgrim's Progress",         url:"#" },
+          { n:"John Dryden",             d:"1631–1700",   nat:"British",    work:"Absalom & Achitophel; All for Love", url:"#" },
+          { n:"William Congreve",        d:"1670–1729",   nat:"British",    work:"The Way of the World",           url:"#" },
+          { n:"William Wycherley",       d:"1641–1716",   nat:"British",    work:"The Country Wife",               url:"#" },
+          { n:"George Etherege",         d:"c.1636–1692", nat:"British",    work:"The Man of Mode",                url:"#" },
+          { n:"Aphra Behn",              d:"1640–1689",   nat:"British",    work:"Oroonoko",                       url:"#" },
+          { n:"Samuel Pepys",            d:"1633–1703",   nat:"British",    work:"The Diary",                      url:"#" },
+          { n:"Thomas Hobbes",           d:"1588–1679",   nat:"British",    work:"Leviathan",                      url:"#" },
+          { n:"John Locke",              d:"1632–1704",   nat:"British",    work:"Essay Concerning Human Understanding", url:"#" },
+          { n:"Blaise Pascal",           d:"1623–1662",   nat:"French",     work:"Pensées",                        url:"#" },
+          { n:"Molière",                 d:"1622–1673",   nat:"French",     work:"Tartuffe; The Misanthrope",      url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "18th Century",
+    periods: [
+      {
+        name: "Augustan / Neo-Classical", years: "1700–1745", color: "#3D5C1A",
+        writers: [
+          { n:"Alexander Pope",          d:"1688–1744",   nat:"British",    work:"The Rape of the Lock; Essay on Man", url:"#" },
+          { n:"Jonathan Swift",          d:"1667–1745",   nat:"British/Irish", work:"Gulliver's Travels; A Modest Proposal", url:"#" },
+          { n:"Joseph Addison",          d:"1672–1719",   nat:"British",    work:"The Spectator",                  url:"#" },
+          { n:"Richard Steele",          d:"1672–1729",   nat:"British/Irish", work:"The Tatler",                  url:"#" },
+          { n:"Daniel Defoe",            d:"1660–1731",   nat:"British",    work:"Robinson Crusoe; Moll Flanders", url:"#" },
+          { n:"John Gay",                d:"1685–1732",   nat:"British",    work:"The Beggar's Opera",             url:"#" },
+          { n:"John Vanbrugh",           d:"1664–1726",   nat:"British",    work:"The Relapse",                    url:"#" },
+          { n:"George Berkeley",         d:"1685–1753",   nat:"Irish",      work:"A Treatise Concerning Human Knowledge", url:"#" },
+        ]
+      },
+      {
+        name: "Age of Sensibility / Novel", years: "1740–1785", color: "#1A3A5C",
+        writers: [
+          { n:"Samuel Richardson",       d:"1689–1761",   nat:"British",    work:"Pamela; Clarissa",               url:"#" },
+          { n:"Henry Fielding",          d:"1707–1754",   nat:"British",    work:"Tom Jones; Joseph Andrews",      url:"#" },
+          { n:"Laurence Sterne",         d:"1713–1768",   nat:"British/Irish", work:"Tristram Shandy",             url:"#" },
+          { n:"Tobias Smollett",         d:"1721–1771",   nat:"British",    work:"Roderick Random",                url:"#" },
+          { n:"Samuel Johnson",          d:"1709–1784",   nat:"British",    work:"Dictionary; The Lives of the Poets", url:"#" },
+          { n:"Oliver Goldsmith",        d:"1728–1774",   nat:"Irish",      work:"The Vicar of Wakefield; She Stoops to Conquer", url:"#" },
+          { n:"Thomas Gray",             d:"1716–1771",   nat:"British",    work:"Elegy Written in a Country Churchyard", url:"#" },
+          { n:"Edward Young",            d:"1683–1765",   nat:"British",    work:"Night Thoughts",                 url:"#" },
+          { n:"James Thomson",           d:"1700–1748",   nat:"British",    work:"The Seasons",                    url:"#" },
+          { n:"Horace Walpole",          d:"1717–1797",   nat:"British",    work:"The Castle of Otranto",          url:"#" },
+          { n:"Frances Burney",          d:"1752–1840",   nat:"British",    work:"Evelina",                        url:"#" },
+          { n:"James Boswell",           d:"1740–1795",   nat:"British",    work:"Life of Samuel Johnson",         url:"#" },
+          { n:"Edmund Burke",            d:"1729–1797",   nat:"Irish",      work:"Reflections on the Revolution",  url:"#" },
+          { n:"Richard Brinsley Sheridan",d:"1751–1816",  nat:"Irish",      work:"The School for Scandal",         url:"#" },
+          { n:"Jean-Jacques Rousseau",   d:"1712–1778",   nat:"Swiss-French",work:"Confessions; Émile",            url:"#" },
+          { n:"Voltaire",                d:"1694–1778",   nat:"French",     work:"Candide",                        url:"#" },
+        ]
+      },
+      {
+        name: "American Colonial & Early Republic", years: "1620–1800", color: "#5C3A1A",
+        writers: [
+          { n:"Benjamin Franklin",       d:"1706–1790",   nat:"American",   work:"Autobiography",                  url:"#" },
+          { n:"Thomas Paine",            d:"1737–1809",   nat:"American",   work:"Common Sense",                   url:"#" },
+          { n:"Phillis Wheatley",        d:"c.1753–1784", nat:"American",   work:"Poems on Various Subjects",      url:"#" },
+          { n:"Philip Freneau",          d:"1752–1832",   nat:"American",   work:"The Wild Honey Suckle",          url:"#" },
+          { n:"William Blake",           d:"1757–1827",   nat:"British",    work:"Songs of Innocence and Experience", url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "19th Century",
+    periods: [
+      {
+        name: "Romanticism (British)", years: "1785–1830", color: "#7B1D1D",
+        writers: [
+          { n:"William Wordsworth",      d:"1770–1850",   nat:"British",    work:"Lyrical Ballads; The Prelude",   url:"#" },
+          { n:"Samuel Taylor Coleridge", d:"1772–1834",   nat:"British",    work:"The Rime of the Ancient Mariner",url:"#" },
+          { n:"Lord Byron",              d:"1788–1824",   nat:"British",    work:"Don Juan; Childe Harold",        url:"#" },
+          { n:"Percy Bysshe Shelley",    d:"1792–1822",   nat:"British",    work:"Ode to the West Wind; Prometheus Unbound", url:"#" },
+          { n:"John Keats",              d:"1795–1821",   nat:"British",    work:"Ode to a Nightingale; Hyperion", url:"#" },
+          { n:"Mary Shelley",            d:"1797–1851",   nat:"British",    work:"Frankenstein",                   url:"#" },
+          { n:"Walter Scott",            d:"1771–1832",   nat:"British",    work:"Waverley; Ivanhoe",              url:"#" },
+          { n:"Charles Lamb",            d:"1775–1834",   nat:"British",    work:"Essays of Elia",                 url:"#" },
+          { n:"William Hazlitt",         d:"1778–1830",   nat:"British",    work:"Characters of Shakespeare's Plays", url:"#" },
+          { n:"Thomas De Quincey",       d:"1785–1859",   nat:"British",    work:"Confessions of an English Opium-Eater", url:"#" },
+          { n:"Jane Austen",             d:"1775–1817",   nat:"British",    work:"Pride and Prejudice; Emma",      url:"#" },
+          { n:"Robert Burns",            d:"1759–1796",   nat:"Scottish",   work:"Auld Lang Syne; Tam o' Shanter", url:"#" },
+        ]
+      },
+      {
+        name: "American Romanticism / Transcendentalism", years: "1820–1865", color: "#1C3F7A",
+        writers: [
+          { n:"Ralph Waldo Emerson",     d:"1803–1882",   nat:"American",   work:"Nature; Self-Reliance",          url:"#" },
+          { n:"Henry David Thoreau",     d:"1817–1862",   nat:"American",   work:"Walden; Civil Disobedience",     url:"#" },
+          { n:"Edgar Allan Poe",         d:"1809–1849",   nat:"American",   work:"The Raven; The Fall of the House of Usher", url:"#" },
+          { n:"Nathaniel Hawthorne",     d:"1804–1864",   nat:"American",   work:"The Scarlet Letter",             url:"#" },
+          { n:"Herman Melville",         d:"1819–1891",   nat:"American",   work:"Moby-Dick; Billy Budd",          url:"#" },
+          { n:"Walt Whitman",            d:"1819–1892",   nat:"American",   work:"Leaves of Grass; Song of Myself",url:"#" },
+          { n:"Emily Dickinson",         d:"1830–1886",   nat:"American",   work:"Collected Poems",                url:"#" },
+          { n:"Henry Wadsworth Longfellow",d:"1807–1882", nat:"American",   work:"The Song of Hiawatha",           url:"#" },
+          { n:"Washington Irving",       d:"1783–1859",   nat:"American",   work:"The Legend of Sleepy Hollow",    url:"#" },
+          { n:"James Fenimore Cooper",   d:"1789–1851",   nat:"American",   work:"The Last of the Mohicans",       url:"#" },
+        ]
+      },
+      {
+        name: "Victorian Literature", years: "1830–1901", color: "#1A5C32",
+        writers: [
+          { n:"Charles Dickens",         d:"1812–1870",   nat:"British",    work:"Great Expectations; Bleak House",url:"#" },
+          { n:"George Eliot",            d:"1819–1880",   nat:"British",    work:"Middlemarch; The Mill on the Floss", url:"#" },
+          { n:"Thomas Hardy",            d:"1840–1928",   nat:"British",    work:"Tess of the d'Urbervilles; Far from the Madding Crowd", url:"#" },
+          { n:"Alfred Lord Tennyson",    d:"1809–1892",   nat:"British",    work:"In Memoriam; The Idylls of the King", url:"#" },
+          { n:"Robert Browning",         d:"1812–1889",   nat:"British",    work:"My Last Duchess; The Ring and the Book", url:"#" },
+          { n:"Elizabeth Barrett Browning",d:"1806–1861", nat:"British",    work:"Sonnets from the Portuguese; Aurora Leigh", url:"#" },
+          { n:"Matthew Arnold",          d:"1822–1888",   nat:"British",    work:"Dover Beach; Culture and Anarchy",url:"#" },
+          { n:"Gerard Manley Hopkins",   d:"1844–1889",   nat:"British",    work:"The Windhover; God's Grandeur",  url:"#" },
+          { n:"William Makepeace Thackeray",d:"1811–1863",nat:"British",    work:"Vanity Fair",                    url:"#" },
+          { n:"Anthony Trollope",        d:"1815–1882",   nat:"British",    work:"The Warden; Barchester Towers",  url:"#" },
+          { n:"George Meredith",         d:"1828–1909",   nat:"British",    work:"The Egoist; Modern Love",        url:"#" },
+          { n:"Walter Pater",            d:"1839–1894",   nat:"British",    work:"Studies in the History of the Renaissance", url:"#" },
+          { n:"John Ruskin",             d:"1819–1900",   nat:"British",    work:"Modern Painters; Unto This Last",url:"#" },
+          { n:"Thomas Carlyle",          d:"1795–1881",   nat:"British",    work:"Sartor Resartus; Past and Present",url:"#" },
+          { n:"John Stuart Mill",        d:"1806–1873",   nat:"British",    work:"On Liberty; Utilitarianism",     url:"#" },
+          { n:"Lewis Carroll",           d:"1832–1898",   nat:"British",    work:"Alice's Adventures in Wonderland",url:"#" },
+          { n:"Oscar Wilde",             d:"1854–1900",   nat:"Irish",      work:"The Importance of Being Earnest; The Picture of Dorian Gray", url:"#" },
+          { n:"George Bernard Shaw",     d:"1856–1950",   nat:"Irish",      work:"Pygmalion; Man and Superman",    url:"#" },
+          { n:"Algernon Swinburne",      d:"1837–1909",   nat:"British",    work:"Poems and Ballads",              url:"#" },
+          { n:"Dante Gabriel Rossetti",  d:"1828–1882",   nat:"British",    work:"The House of Life",              url:"#" },
+          { n:"Christina Rossetti",      d:"1830–1894",   nat:"British",    work:"Goblin Market",                  url:"#" },
+          { n:"William Morris",          d:"1834–1896",   nat:"British",    work:"The Defence of Guenevere",       url:"#" },
+          { n:"Rudyard Kipling",         d:"1865–1936",   nat:"British/Indian", work:"Kim; The Jungle Book",       url:"#" },
+          { n:"Robert Louis Stevenson",  d:"1850–1894",   nat:"Scottish",   work:"Treasure Island; Dr Jekyll & Mr Hyde", url:"#" },
+          { n:"H.G. Wells",              d:"1866–1946",   nat:"British",    work:"The Time Machine; The War of the Worlds", url:"#" },
+        ]
+      },
+      {
+        name: "American Realism & Naturalism", years: "1865–1900", color: "#4A3070",
+        writers: [
+          { n:"Mark Twain",              d:"1835–1910",   nat:"American",   work:"The Adventures of Huckleberry Finn", url:"#" },
+          { n:"Henry James",             d:"1843–1916",   nat:"American",   work:"The Portrait of a Lady; The Turn of the Screw", url:"#" },
+          { n:"Stephen Crane",           d:"1871–1900",   nat:"American",   work:"The Red Badge of Courage",       url:"#" },
+          { n:"Theodore Dreiser",        d:"1871–1945",   nat:"American",   work:"Sister Carrie; An American Tragedy", url:"#" },
+          { n:"Kate Chopin",             d:"1850–1904",   nat:"American",   work:"The Awakening",                  url:"#" },
+          { n:"William Dean Howells",    d:"1837–1920",   nat:"American",   work:"The Rise of Silas Lapham",       url:"#" },
+          { n:"Bret Harte",              d:"1836–1902",   nat:"American",   work:"The Luck of Roaring Camp",       url:"#" },
+          { n:"Ambrose Bierce",          d:"1842–c.1914", nat:"American",   work:"An Occurrence at Owl Creek Bridge", url:"#" },
+          { n:"Frederick Douglass",      d:"1818–1895",   nat:"American",   work:"Narrative of the Life of F. Douglass", url:"#" },
+        ]
+      },
+      {
+        name: "19th c. European", years: "1800–1900", color: "#6B5B3E",
+        writers: [
+          { n:"Johann Wolfgang von Goethe",d:"1749–1832", nat:"German",     work:"Faust; The Sorrows of Young Werther", url:"#" },
+          { n:"Friedrich Schiller",      d:"1759–1805",   nat:"German",     work:"Wallenstein; Ode to Joy",        url:"#" },
+          { n:"Heinrich Heine",          d:"1797–1856",   nat:"German",     work:"Book of Songs",                  url:"#" },
+          { n:"Honoré de Balzac",        d:"1799–1850",   nat:"French",     work:"La Comédie Humaine",             url:"#" },
+          { n:"Gustave Flaubert",        d:"1821–1880",   nat:"French",     work:"Madame Bovary",                  url:"#" },
+          { n:"Émile Zola",              d:"1840–1902",   nat:"French",     work:"Germinal; Nana",                 url:"#" },
+          { n:"Victor Hugo",             d:"1802–1885",   nat:"French",     work:"Les Misérables; Notre-Dame de Paris", url:"#" },
+          { n:"Charles Baudelaire",      d:"1821–1867",   nat:"French",     work:"Les Fleurs du Mal",              url:"#" },
+          { n:"Arthur Rimbaud",          d:"1854–1891",   nat:"French",     work:"A Season in Hell; Illuminations",url:"#" },
+          { n:"Stéphane Mallarmé",       d:"1842–1898",   nat:"French",     work:"L'Après-midi d'un faune",        url:"#" },
+          { n:"Leo Tolstoy",             d:"1828–1910",   nat:"Russian",    work:"War and Peace; Anna Karenina",   url:"#" },
+          { n:"Fyodor Dostoevsky",       d:"1821–1881",   nat:"Russian",    work:"Crime and Punishment; The Brothers Karamazov", url:"#" },
+          { n:"Ivan Turgenev",           d:"1818–1883",   nat:"Russian",    work:"Fathers and Sons",               url:"#" },
+          { n:"Anton Chekhov",           d:"1860–1904",   nat:"Russian",    work:"The Cherry Orchard; The Seagull",url:"#" },
+          { n:"Nikolai Gogol",           d:"1809–1852",   nat:"Russian",    work:"Dead Souls; The Overcoat",       url:"#" },
+          { n:"Henrik Ibsen",            d:"1828–1906",   nat:"Norwegian",  work:"A Doll's House; Hedda Gabler",   url:"#" },
+          { n:"August Strindberg",       d:"1849–1912",   nat:"Swedish",    work:"Miss Julie; The Father",         url:"#" },
+          { n:"Søren Kierkegaard",       d:"1813–1855",   nat:"Danish",     work:"Either/Or; Fear and Trembling",  url:"#" },
+          { n:"Friedrich Nietzsche",     d:"1844–1900",   nat:"German",     work:"Thus Spoke Zarathustra",         url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "20th Century — Early Modernism",
+    periods: [
+      {
+        name: "British & Irish Modernism", years: "1900–1945", color: "#1A3A5C",
+        writers: [
+          { n:"Joseph Conrad",           d:"1857–1924",   nat:"Polish-British", work:"Heart of Darkness; Lord Jim",url:"#" },
+          { n:"W.B. Yeats",              d:"1865–1939",   nat:"Irish",      work:"The Tower; A Vision",            url:"#" },
+          { n:"James Joyce",             d:"1882–1941",   nat:"Irish",      work:"Ulysses; Dubliners; A Portrait of the Artist", url:"#" },
+          { n:"Virginia Woolf",          d:"1882–1941",   nat:"British",    work:"Mrs Dalloway; To the Lighthouse; The Waves", url:"#" },
+          { n:"D.H. Lawrence",           d:"1885–1930",   nat:"British",    work:"Sons and Lovers; Women in Love; The Rainbow", url:"#" },
+          { n:"T.S. Eliot",              d:"1888–1965",   nat:"American-British", work:"The Waste Land; Four Quartets", url:"#" },
+          { n:"Ezra Pound",              d:"1885–1972",   nat:"American",   work:"The Cantos; Hugh Selwyn Mauberley", url:"#" },
+          { n:"E.M. Forster",            d:"1879–1970",   nat:"British",    work:"A Passage to India; Howards End",url:"#" },
+          { n:"Samuel Beckett",          d:"1906–1989",   nat:"Irish",      work:"Waiting for Godot; Endgame; Molloy", url:"#" },
+          { n:"Ford Madox Ford",         d:"1873–1939",   nat:"British",    work:"The Good Soldier; Parade's End",url:"#" },
+          { n:"Wyndham Lewis",           d:"1882–1957",   nat:"British",    work:"Tarr; Blast (Vorticism)",        url:"#" },
+          { n:"Katherine Mansfield",     d:"1888–1923",   nat:"New Zealand",work:"Bliss; The Garden Party",        url:"#" },
+          { n:"Siegfried Sassoon",       d:"1886–1967",   nat:"British",    work:"Memoirs of an Infantry Officer", url:"#" },
+          { n:"Wilfred Owen",            d:"1893–1918",   nat:"British",    work:"Dulce et Decorum Est",           url:"#" },
+          { n:"Rupert Brooke",           d:"1887–1915",   nat:"British",    work:"The Soldier; 1914 Sonnets",      url:"#" },
+          { n:"Gerard Manley Hopkins",   d:"1844–1889",   nat:"British",    work:"The Windhover (publ. 1918)",     url:"#" },
+          { n:"Hugh MacDiarmid",         d:"1892–1978",   nat:"Scottish",   work:"A Drunk Man Looks at the Thistle",url:"#" },
+          { n:"Dylan Thomas",            d:"1914–1953",   nat:"Welsh",      work:"Do Not Go Gentle; Deaths and Entrances", url:"#" },
+          { n:"W.H. Auden",              d:"1907–1973",   nat:"British",    work:"The Age of Anxiety; Musée des Beaux Arts", url:"#" },
+          { n:"Louis MacNeice",          d:"1907–1963",   nat:"Irish",      work:"Autumn Journal",                 url:"#" },
+          { n:"Stephen Spender",         d:"1909–1995",   nat:"British",    work:"The Still Centre",               url:"#" },
+          { n:"George Orwell",           d:"1903–1950",   nat:"British",    work:"1984; Animal Farm; Homage to Catalonia", url:"#" },
+          { n:"Aldous Huxley",           d:"1894–1963",   nat:"British",    work:"Brave New World; Point Counter Point", url:"#" },
+          { n:"Graham Greene",           d:"1904–1991",   nat:"British",    work:"The Power and the Glory; The Heart of the Matter", url:"#" },
+          { n:"Evelyn Waugh",            d:"1903–1966",   nat:"British",    work:"Brideshead Revisited; Decline and Fall", url:"#" },
+          { n:"P.G. Wodehouse",          d:"1881–1975",   nat:"British",    work:"The Inimitable Jeeves",          url:"#" },
+        ]
+      },
+      {
+        name: "American Modernism", years: "1900–1945", color: "#4A3070",
+        writers: [
+          { n:"William Faulkner",        d:"1897–1962",   nat:"American",   work:"The Sound and the Fury; As I Lay Dying", url:"#" },
+          { n:"Ernest Hemingway",        d:"1899–1961",   nat:"American",   work:"A Farewell to Arms; The Sun Also Rises", url:"#" },
+          { n:"F. Scott Fitzgerald",     d:"1896–1940",   nat:"American",   work:"The Great Gatsby; Tender Is the Night", url:"#" },
+          { n:"John Steinbeck",          d:"1902–1968",   nat:"American",   work:"The Grapes of Wrath; Of Mice and Men", url:"#" },
+          { n:"Edith Wharton",           d:"1862–1937",   nat:"American",   work:"The Age of Innocence; The House of Mirth", url:"#" },
+          { n:"Gertrude Stein",          d:"1874–1946",   nat:"American",   work:"Tender Buttons; The Autobiography of Alice B. Toklas", url:"#" },
+          { n:"Wallace Stevens",         d:"1879–1955",   nat:"American",   work:"Harmonium; The Man with the Blue Guitar", url:"#" },
+          { n:"William Carlos Williams", d:"1883–1963",   nat:"American",   work:"Paterson; Spring and All",       url:"#" },
+          { n:"Marianne Moore",          d:"1887–1972",   nat:"American",   work:"Observations; Collected Poems",  url:"#" },
+          { n:"e.e. cummings",           d:"1894–1962",   nat:"American",   work:"Tulips and Chimneys",            url:"#" },
+          { n:"Hart Crane",              d:"1899–1932",   nat:"American",   work:"The Bridge; White Buildings",    url:"#" },
+          { n:"Theodore Dreiser",        d:"1871–1945",   nat:"American",   work:"An American Tragedy",            url:"#" },
+          { n:"Sinclair Lewis",          d:"1885–1951",   nat:"American",   work:"Main Street; Babbitt",           url:"#" },
+          { n:"Sherwood Anderson",       d:"1876–1941",   nat:"American",   work:"Winesburg, Ohio",                url:"#" },
+          { n:"Upton Sinclair",          d:"1878–1968",   nat:"American",   work:"The Jungle",                     url:"#" },
+          { n:"Eugene O'Neill",          d:"1888–1953",   nat:"American",   work:"Long Day's Journey into Night",  url:"#" },
+          { n:"Langston Hughes",         d:"1902–1967",   nat:"American",   work:"The Weary Blues; Montage of a Dream Deferred", url:"#" },
+          { n:"Zora Neale Hurston",      d:"1891–1960",   nat:"American",   work:"Their Eyes Were Watching God",   url:"#" },
+          { n:"Richard Wright",          d:"1908–1960",   nat:"American",   work:"Native Son; Black Boy",          url:"#" },
+          { n:"Ralph Ellison",           d:"1914–1994",   nat:"American",   work:"Invisible Man",                  url:"#" },
+          { n:"Countee Cullen",          d:"1903–1946",   nat:"American",   work:"Color; Copper Sun",              url:"#" },
+          { n:"Jean Toomer",             d:"1894–1967",   nat:"American",   work:"Cane",                           url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "20th Century — Mid & Late",
+    periods: [
+      {
+        name: "Post-War British & Irish", years: "1945–2000", color: "#5C2D7A",
+        writers: [
+          { n:"Philip Larkin",           d:"1922–1985",   nat:"British",    work:"The Whitsun Weddings; High Windows", url:"#" },
+          { n:"Ted Hughes",              d:"1930–1998",   nat:"British",    work:"Crow; Birthday Letters",         url:"#" },
+          { n:"Sylvia Plath",            d:"1932–1963",   nat:"American",   work:"The Bell Jar; Ariel",            url:"#" },
+          { n:"Seamus Heaney",           d:"1939–2013",   nat:"Irish",      work:"Death of a Naturalist; North",   url:"#" },
+          { n:"Harold Pinter",           d:"1930–2008",   nat:"British",    work:"The Birthday Party; Betrayal",   url:"#" },
+          { n:"John Osborne",            d:"1929–1994",   nat:"British",    work:"Look Back in Anger",             url:"#" },
+          { n:"Kingsley Amis",           d:"1922–1995",   nat:"British",    work:"Lucky Jim",                      url:"#" },
+          { n:"Iris Murdoch",            d:"1919–1999",   nat:"Irish-British",work:"The Sea, the Sea; Under the Net",url:"#" },
+          { n:"Anthony Burgess",         d:"1917–1993",   nat:"British",    work:"A Clockwork Orange",             url:"#" },
+          { n:"William Golding",         d:"1911–1993",   nat:"British",    work:"Lord of the Flies",              url:"#" },
+          { n:"Doris Lessing",           d:"1919–2013",   nat:"British",    work:"The Golden Notebook; Shikasta",  url:"#" },
+          { n:"Muriel Spark",            d:"1918–2006",   nat:"Scottish",   work:"The Prime of Miss Jean Brodie",  url:"#" },
+          { n:"John Fowles",             d:"1926–2005",   nat:"British",    work:"The French Lieutenant's Woman",  url:"#" },
+          { n:"Tom Stoppard",            d:"1937–",       nat:"British",    work:"Rosencrantz and Guildenstern Are Dead", url:"#" },
+          { n:"Ian McEwan",              d:"1948–",       nat:"British",    work:"Atonement; Saturday",            url:"#" },
+          { n:"Martin Amis",             d:"1949–2023",   nat:"British",    work:"Money; London Fields",           url:"#" },
+          { n:"Kazuo Ishiguro",          d:"1954–",       nat:"British",    work:"The Remains of the Day; Never Let Me Go", url:"#" },
+          { n:"Julian Barnes",           d:"1946–",       nat:"British",    work:"Flaubert's Parrot; The Sense of an Ending", url:"#" },
+          { n:"Angela Carter",           d:"1940–1992",   nat:"British",    work:"The Bloody Chamber; Nights at the Circus", url:"#" },
+          { n:"A.S. Byatt",              d:"1936–2023",   nat:"British",    work:"Possession; The Virgin in the Garden", url:"#" },
+          { n:"Penelope Fitzgerald",     d:"1916–2000",   nat:"British",    work:"Offshore; The Blue Flower",      url:"#" },
+          { n:"Derek Walcott",           d:"1930–2017",   nat:"Caribbean",  work:"Omeros; In a Green Night",       url:"#" },
+          { n:"Seamus Deane",            d:"1940–2021",   nat:"Irish",      work:"Reading in the Dark",            url:"#" },
+          { n:"Paul Muldoon",            d:"1951–",       nat:"Irish",      work:"Quoof; Moy Sand and Gravel",     url:"#" },
+          { n:"Geoffrey Hill",           d:"1932–2016",   nat:"British",    work:"Mercian Hymns; The Mystery of the Charity of Charles Péguy", url:"#" },
+          { n:"Stevie Smith",            d:"1902–1971",   nat:"British",    work:"Novel on Yellow Paper; Not Waving but Drowning", url:"#" },
+        ]
+      },
+      {
+        name: "Post-War American", years: "1945–2000", color: "#3D5C1A",
+        writers: [
+          { n:"Arthur Miller",           d:"1915–2005",   nat:"American",   work:"Death of a Salesman; The Crucible", url:"#" },
+          { n:"Tennessee Williams",      d:"1911–1983",   nat:"American",   work:"A Streetcar Named Desire; The Glass Menagerie", url:"#" },
+          { n:"J.D. Salinger",           d:"1919–2010",   nat:"American",   work:"The Catcher in the Rye",         url:"#" },
+          { n:"Saul Bellow",             d:"1915–2005",   nat:"American",   work:"The Adventures of Augie March; Herzog", url:"#" },
+          { n:"Jack Kerouac",            d:"1922–1969",   nat:"American",   work:"On the Road",                    url:"#" },
+          { n:"Allen Ginsberg",          d:"1926–1997",   nat:"American",   work:"Howl; Kaddish",                  url:"#" },
+          { n:"Robert Lowell",           d:"1917–1977",   nat:"American",   work:"Life Studies; Lord Weary's Castle",url:"#" },
+          { n:"Anne Sexton",             d:"1928–1974",   nat:"American",   work:"Live or Die; To Bedlam and Part Way Back", url:"#" },
+          { n:"John Berryman",           d:"1914–1972",   nat:"American",   work:"The Dream Songs",                url:"#" },
+          { n:"Elizabeth Bishop",        d:"1911–1979",   nat:"American",   work:"Geography III; North & South",   url:"#" },
+          { n:"Adrienne Rich",           d:"1929–2012",   nat:"American",   work:"Diving into the Wreck; Of Woman Born", url:"#" },
+          { n:"John Cheever",            d:"1912–1982",   nat:"American",   work:"The Wapshot Chronicle; Bullet Park", url:"#" },
+          { n:"Flannery O'Connor",       d:"1925–1964",   nat:"American",   work:"A Good Man Is Hard to Find; Wise Blood", url:"#" },
+          { n:"Truman Capote",           d:"1924–1984",   nat:"American",   work:"In Cold Blood; Breakfast at Tiffany's", url:"#" },
+          { n:"John Updike",             d:"1932–2009",   nat:"American",   work:"Rabbit, Run; The Witches of Eastwick", url:"#" },
+          { n:"Philip Roth",             d:"1933–2018",   nat:"American",   work:"American Pastoral; Portnoy's Complaint", url:"#" },
+          { n:"Thomas Pynchon",          d:"1937–",       nat:"American",   work:"The Crying of Lot 49; Gravity's Rainbow", url:"#" },
+          { n:"Don DeLillo",             d:"1936–",       nat:"American",   work:"White Noise; Underworld",        url:"#" },
+          { n:"Cormac McCarthy",         d:"1933–2023",   nat:"American",   work:"Blood Meridian; The Road; No Country for Old Men", url:"#" },
+          { n:"Toni Morrison",           d:"1931–2019",   nat:"American",   work:"Beloved; Song of Solomon; The Bluest Eye", url:"#" },
+          { n:"Alice Walker",            d:"1944–",       nat:"American",   work:"The Color Purple",               url:"#" },
+          { n:"Maya Angelou",            d:"1928–2014",   nat:"American",   work:"I Know Why the Caged Bird Sings",url:"#" },
+          { n:"James Baldwin",           d:"1924–1987",   nat:"American",   work:"Go Tell It on the Mountain; The Fire Next Time", url:"#" },
+          { n:"Edward Albee",            d:"1928–2016",   nat:"American",   work:"Who's Afraid of Virginia Woolf?",url:"#" },
+          { n:"Kurt Vonnegut",           d:"1922–2007",   nat:"American",   work:"Slaughterhouse-Five; Cat's Cradle",url:"#" },
+          { n:"Joseph Heller",           d:"1923–1999",   nat:"American",   work:"Catch-22",                       url:"#" },
+          { n:"Ken Kesey",               d:"1935–2001",   nat:"American",   work:"One Flew Over the Cuckoo's Nest",url:"#" },
+          { n:"Raymond Carver",          d:"1938–1988",   nat:"American",   work:"What We Talk About When We Talk About Love", url:"#" },
+          { n:"Joyce Carol Oates",       d:"1938–",       nat:"American",   work:"them; Blonde",                   url:"#" },
+          { n:"John Barth",              d:"1930–2024",   nat:"American",   work:"The Sot-Weed Factor; Lost in the Funhouse", url:"#" },
+          { n:"Gwendolyn Brooks",        d:"1917–2000",   nat:"American",   work:"A Street in Bronzeville; Annie Allen", url:"#" },
+          { n:"Amiri Baraka",            d:"1934–2014",   nat:"American",   work:"Dutchman; Blues People",         url:"#" },
+          { n:"Nikki Giovanni",          d:"1943–2024",   nat:"American",   work:"Black Feeling; Cotton Candy on a Rainy Day", url:"#" },
+        ]
+      },
+      {
+        name: "Postcolonial & World Literature", years: "1950–2000", color: "#7B1D1D",
+        writers: [
+          { n:"Chinua Achebe",           d:"1930–2013",   nat:"Nigerian",   work:"Things Fall Apart; Arrow of God",url:"#" },
+          { n:"Wole Soyinka",            d:"1934–",       nat:"Nigerian",   work:"Death and the King's Horseman; A Dance of the Forests", url:"#" },
+          { n:"Ngugi wa Thiong'o",       d:"1938–",       nat:"Kenyan",     work:"Weep Not, Child; Petals of Blood",url:"#" },
+          { n:"Nadine Gordimer",         d:"1923–2014",   nat:"South African",work:"Burger's Daughter; July's People", url:"#" },
+          { n:"J.M. Coetzee",            d:"1940–",       nat:"South African",work:"Disgrace; Waiting for the Barbarians", url:"#" },
+          { n:"Athol Fugard",            d:"1932–",       nat:"South African",work:"Sizwe Banzi is Dead; Master Harold...and the Boys", url:"#" },
+          { n:"Salman Rushdie",          d:"1947–",       nat:"Indian-British",work:"Midnight's Children; The Satanic Verses", url:"#" },
+          { n:"V.S. Naipaul",            d:"1932–2018",   nat:"Trinidadian-British",work:"A House for Mr Biswas; The Mimic Men", url:"#" },
+          { n:"Jean Rhys",               d:"1890–1979",   nat:"Dominican-British",work:"Wide Sargasso Sea; Good Morning, Midnight", url:"#" },
+          { n:"Wilson Harris",           d:"1921–2018",   nat:"Guyanese",   work:"Palace of the Peacock",          url:"#" },
+          { n:"George Lamming",          d:"1927–2022",   nat:"Barbadian",  work:"In the Castle of My Skin",       url:"#" },
+          { n:"Kamau Brathwaite",        d:"1930–2020",   nat:"Barbadian",  work:"The Arrivants; History of the Voice", url:"#" },
+          { n:"Gabriel García Márquez",  d:"1927–2014",   nat:"Colombian",  work:"One Hundred Years of Solitude; Love in the Time of Cholera", url:"#" },
+          { n:"Jorge Luis Borges",       d:"1899–1986",   nat:"Argentine",  work:"Ficciones; Labyrinths",          url:"#" },
+          { n:"Pablo Neruda",            d:"1904–1973",   nat:"Chilean",    work:"Twenty Love Poems; Canto General",url:"#" },
+          { n:"Octavio Paz",             d:"1914–1998",   nat:"Mexican",    work:"The Labyrinth of Solitude; Sun Stone", url:"#" },
+          { n:"Julio Cortázar",          d:"1914–1984",   nat:"Argentine",  work:"Hopscotch; Blow-Up",             url:"#" },
+          { n:"Mario Vargas Llosa",      d:"1936–",       nat:"Peruvian",   work:"The Green House; Conversation in the Cathedral", url:"#" },
+          { n:"Albert Camus",            d:"1913–1960",   nat:"French-Algerian",work:"The Stranger; The Myth of Sisyphus", url:"#" },
+          { n:"Jean-Paul Sartre",        d:"1905–1980",   nat:"French",     work:"Nausea; No Exit; Being and Nothingness", url:"#" },
+          { n:"Simone de Beauvoir",      d:"1908–1986",   nat:"French",     work:"The Second Sex; She Came to Stay",url:"#" },
+          { n:"Franz Kafka",             d:"1883–1924",   nat:"Czech-German",work:"The Trial; The Metamorphosis",  url:"#" },
+          { n:"Bertolt Brecht",          d:"1898–1956",   nat:"German",     work:"Mother Courage; The Good Person of Szechwan", url:"#" },
+          { n:"Thomas Mann",             d:"1875–1955",   nat:"German",     work:"The Magic Mountain; Death in Venice", url:"#" },
+          { n:"Rainer Maria Rilke",      d:"1875–1926",   nat:"Czech-German",work:"Duino Elegies; Sonnets to Orpheus", url:"#" },
+          { n:"Marcel Proust",           d:"1871–1922",   nat:"French",     work:"In Search of Lost Time",         url:"#" },
+          { n:"André Gide",              d:"1869–1951",   nat:"French",     work:"The Immoralist; The Counterfeiters", url:"#" },
+          { n:"Luigi Pirandello",        d:"1867–1936",   nat:"Italian",    work:"Six Characters in Search of an Author", url:"#" },
+          { n:"Italo Calvino",           d:"1923–1985",   nat:"Italian",    work:"If on a winter's night a traveler; Cosmicomics", url:"#" },
+          { n:"Umberto Eco",             d:"1932–2016",   nat:"Italian",    work:"The Name of the Rose; Foucault's Pendulum", url:"#" },
+          { n:"Patrick White",           d:"1912–1990",   nat:"Australian", work:"Voss; The Tree of Man",          url:"#" },
+        ]
+      },
+      {
+        name: "Indian Writing in English", years: "1900–2000", color: "#8B4500",
+        writers: [
+          { n:"Rabindranath Tagore",     d:"1861–1941",   nat:"Indian",     work:"Gitanjali; The Home and the World; Gora", url:"#" },
+          { n:"R.K. Narayan",            d:"1906–2001",   nat:"Indian",     work:"The Guide; Malgudi Days; The Bachelor of Arts", url:"#" },
+          { n:"Raja Rao",                d:"1908–2006",   nat:"Indian",     work:"Kanthapura; The Serpent and the Rope", url:"#" },
+          { n:"Mulk Raj Anand",          d:"1905–2004",   nat:"Indian",     work:"Untouchable; Coolie",             url:"#" },
+          { n:"G.V. Desani",             d:"1909–2000",   nat:"Indian",     work:"All About H. Hatterr",           url:"#" },
+          { n:"Nirad C. Chaudhuri",      d:"1897–1999",   nat:"Indian",     work:"The Autobiography of an Unknown Indian", url:"#" },
+          { n:"Dom Moraes",              d:"1938–2004",   nat:"Indian",     work:"A Beginning; Collected Poems",   url:"#" },
+          { n:"Kamala Das",              d:"1934–2009",   nat:"Indian",     work:"My Story; Summer in Calcutta",   url:"#" },
+          { n:"A.K. Ramanujan",          d:"1929–1993",   nat:"Indian",     work:"The Striders; Relations",        url:"#" },
+          { n:"Nissim Ezekiel",          d:"1924–2004",   nat:"Indian",     work:"Sixty Poems; Latter-Day Psalms", url:"#" },
+          { n:"Jayanta Mahapatra",       d:"1928–",       nat:"Indian",     work:"Relationship; A Rain of Rites",  url:"#" },
+          { n:"Arun Kolatkar",           d:"1932–2004",   nat:"Indian",     work:"Jejuri; Kala Ghoda Poems",       url:"#" },
+          { n:"Dilip Chitre",            d:"1938–2009",   nat:"Indian",     work:"Travelling in a Cage",           url:"#" },
+          { n:"Anita Desai",             d:"1937–",       nat:"Indian",     work:"Clear Light of Day; Baumgartner's Bombay", url:"#" },
+          { n:"Balachandra Rajan",       d:"1920–2009",   nat:"Indian",     work:"The Dark Dancer; Too Long in the West", url:"#" },
+          { n:"O.V. Vijayan",            d:"1930–2005",   nat:"Indian",     work:"The Legends of Khasak",          url:"#" },
+          { n:"Shashi Deshpande",        d:"1938–",       nat:"Indian",     work:"That Long Silence; The Dark Holds No Terrors", url:"#" },
+          { n:"Salman Rushdie",          d:"1947–",       nat:"Indian-British",work:"Midnight's Children",          url:"#" },
+          { n:"Amitav Ghosh",            d:"1956–",       nat:"Indian",     work:"The Shadow Lines; The Glass Palace; Sea of Poppies", url:"#" },
+          { n:"Vikram Seth",             d:"1952–",       nat:"Indian",     work:"A Suitable Boy; The Golden Gate",url:"#" },
+          { n:"Vikram Chandra",          d:"1961–",       nat:"Indian",     work:"Sacred Games; Red Earth and Pouring Rain", url:"#" },
+          { n:"Rohinton Mistry",         d:"1952–",       nat:"Indian-Canadian",work:"Such a Long Journey; A Fine Balance", url:"#" },
+          { n:"Upamanyu Chatterjee",     d:"1959–",       nat:"Indian",     work:"English, August",                url:"#" },
+          { n:"Arundhati Roy",           d:"1961–",       nat:"Indian",     work:"The God of Small Things",        url:"#" },
+          { n:"Kiran Desai",             d:"1971–",       nat:"Indian",     work:"The Inheritance of Loss",        url:"#" },
+        ]
+      }
+    ]
+  },
+  {
+    century: "21st Century",
+    periods: [
+      {
+        name: "Contemporary British & Irish", years: "2000–present", color: "#1A3A5C",
+        writers: [
+          { n:"Zadie Smith",             d:"1975–",       nat:"British",    work:"White Teeth; NW; On Beauty",     url:"#" },
+          { n:"Hilary Mantel",           d:"1952–2022",   nat:"British",    work:"Wolf Hall; Bring Up the Bodies", url:"#" },
+          { n:"Pat Barker",              d:"1943–",       nat:"British",    work:"Regeneration Trilogy; The Silence of the Girls", url:"#" },
+          { n:"Colm Tóibín",             d:"1955–",       nat:"Irish",      work:"Brooklyn; The Master",           url:"#" },
+          { n:"Sebastian Faulks",        d:"1953–",       nat:"British",    work:"Birdsong; Charlotte Gray",       url:"#" },
+          { n:"David Mitchell",          d:"1969–",       nat:"British",    work:"Cloud Atlas; The Bone Clocks",   url:"#" },
+          { n:"Ali Smith",               d:"1962–",       nat:"Scottish",   work:"How to Be Both; Seasonal Quartet",url:"#" },
+          { n:"Salley Vickers",          d:"1948–",       nat:"British",    work:"Miss Garnet's Angel",            url:"#" },
+          { n:"Sarah Waters",            d:"1966–",       nat:"Welsh",      work:"Fingersmith; Tipping the Velvet",url:"#" },
+          { n:"Nick Hornby",             d:"1957–",       nat:"British",    work:"High Fidelity; About a Boy",     url:"#" },
+          { n:"Mark Haddon",             d:"1962–",       nat:"British",    work:"The Curious Incident of the Dog in the Night-Time", url:"#" },
+          { n:"Carol Ann Duffy",         d:"1955–",       nat:"Scottish",   work:"The World's Wife; Mean Time",    url:"#" },
+        ]
+      },
+      {
+        name: "Contemporary American", years: "2000–present", color: "#4A3070",
+        writers: [
+          { n:"Junot Díaz",              d:"1968–",       nat:"American",   work:"The Brief Wondrous Life of Oscar Wao", url:"#" },
+          { n:"Colson Whitehead",        d:"1969–",       nat:"American",   work:"The Underground Railroad; The Nickel Boys", url:"#" },
+          { n:"Marilynne Robinson",      d:"1943–",       nat:"American",   work:"Gilead; Housekeeping",           url:"#" },
+          { n:"Jonathan Franzen",        d:"1959–",       nat:"American",   work:"The Corrections; Freedom",       url:"#" },
+          { n:"Jeffrey Eugenides",       d:"1960–",       nat:"American",   work:"Middlesex; The Virgin Suicides", url:"#" },
+          { n:"David Foster Wallace",    d:"1962–2008",   nat:"American",   work:"Infinite Jest; This Is Water",   url:"#" },
+          { n:"Jhumpa Lahiri",           d:"1967–",       nat:"American",   work:"Interpreter of Maladies; The Namesake", url:"#" },
+          { n:"Chimamanda Ngozi Adichie",d:"1977–",       nat:"Nigerian",   work:"Half of a Yellow Sun; Purple Hibiscus; Americanah", url:"#" },
+          { n:"Mohsin Hamid",            d:"1971–",       nat:"Pakistani",  work:"The Reluctant Fundamentalist; Exit West", url:"#" },
+          { n:"Khaled Hosseini",         d:"1965–",       nat:"Afghan-American",work:"The Kite Runner; A Thousand Splendid Suns", url:"#" },
+          { n:"Teju Cole",               d:"1975–",       nat:"Nigerian-American",work:"Open City; Every Day Is for the Thief", url:"#" },
+          { n:"Ocean Vuong",             d:"1988–",       nat:"Vietnamese-American",work:"Night Sky with Exit Wounds; On Earth We're Briefly Gorgeous", url:"#" },
+        ]
+      },
+      {
+        name: "Contemporary Indian Writing in English", years: "2000–present", color: "#8B4500",
+        writers: [
+          { n:"Arundhati Roy",           d:"1961–",       nat:"Indian",     work:"The Ministry of Utmost Happiness", url:"#" },
+          { n:"Amitav Ghosh",            d:"1956–",       nat:"Indian",     work:"The Hungry Tide; Gun Island",    url:"#" },
+          { n:"Jeet Thayil",             d:"1959–",       nat:"Indian",     work:"Narcopolis; These Errors Are Correct", url:"#" },
+          { n:"Arvind Krishna Mehrotra", d:"1947–",       nat:"Indian",     work:"Middle Earth; Collected Poems",  url:"#" },
+          { n:"Manu Joseph",             d:"1974–",       nat:"Indian",     work:"Serious Men; The Illicit Happiness of Other People", url:"#" },
+          { n:"Anuradha Roy",            d:"1967–",       nat:"Indian",     work:"An Atlas of Impossible Longing; All the Lives We Never Lived", url:"#" },
+          { n:"Aatish Taseer",           d:"1980–",       nat:"Indian",     work:"Stranger to History; The Way Things Were", url:"#" },
+          { n:"Siddharth Dhanvant Shanghvi",d:"1977–",   nat:"Indian",     work:"The Last Song of Dusk",          url:"#" },
+          { n:"Jerry Pinto",             d:"1966–",       nat:"Indian",     work:"Em and the Big Hoom",            url:"#" },
+          { n:"Prayaag Akbar",           d:"1984–",       nat:"Indian",     work:"Leila",                          url:"#" },
+        ]
+      },
+      {
+        name: "Critical Theory & Literary Criticism", years: "20th–21st c.", color: "#6B3A6B",
+        writers: [
+          { n:"Ferdinand de Saussure",   d:"1857–1913",   nat:"Swiss",      work:"Course in General Linguistics",  url:"#" },
+          { n:"Mikhail Bakhtin",         d:"1895–1975",   nat:"Russian",    work:"The Dialogic Imagination; Problems of Dostoevsky's Poetics", url:"#" },
+          { n:"Roland Barthes",          d:"1915–1980",   nat:"French",     work:"Mythologies; S/Z; The Death of the Author", url:"#" },
+          { n:"Jacques Derrida",         d:"1930–2004",   nat:"French-Algerian",work:"Of Grammatology; Writing and Difference", url:"#" },
+          { n:"Michel Foucault",         d:"1926–1984",   nat:"French",     work:"Discipline and Punish; The Order of Things", url:"#" },
+          { n:"Louis Althusser",         d:"1918–1990",   nat:"French",     work:"Ideology and Ideological State Apparatuses", url:"#" },
+          { n:"Jacques Lacan",           d:"1901–1981",   nat:"French",     work:"Écrits; The Four Fundamental Concepts of Psychoanalysis", url:"#" },
+          { n:"Julia Kristeva",          d:"1941–",       nat:"Bulgarian-French",work:"Powers of Horror; Revolution in Poetic Language", url:"#" },
+          { n:"Hélène Cixous",           d:"1937–",       nat:"French",     work:"The Laugh of the Medusa",        url:"#" },
+          { n:"Luce Irigaray",           d:"1930–",       nat:"Belgian-French",work:"Speculum of the Other Woman", url:"#" },
+          { n:"Gayatri Chakravorty Spivak",d:"1942–",     nat:"Indian-American",work:"Can the Subaltern Speak?; In Other Worlds", url:"#" },
+          { n:"Homi K. Bhabha",          d:"1949–",       nat:"Indian-British",work:"The Location of Culture; Nation and Narration", url:"#" },
+          { n:"Edward Said",             d:"1935–2003",   nat:"Palestinian-American",work:"Orientalism; Culture and Imperialism", url:"#" },
+          { n:"Terry Eagleton",          d:"1943–",       nat:"British",    work:"Literary Theory: An Introduction; The Function of Criticism", url:"#" },
+          { n:"Fredric Jameson",         d:"1934–2024",   nat:"American",   work:"The Political Unconscious; Postmodernism", url:"#" },
+          { n:"Stuart Hall",             d:"1932–2014",   nat:"Jamaican-British",work:"Encoding/Decoding; The Question of Cultural Identity", url:"#" },
+          { n:"Raymond Williams",        d:"1921–1988",   nat:"Welsh",      work:"Culture and Society; Marxism and Literature", url:"#" },
+          { n:"F.R. Leavis",             d:"1895–1978",   nat:"British",    work:"The Great Tradition; New Bearings in English Poetry", url:"#" },
+          { n:"I.A. Richards",           d:"1893–1979",   nat:"British",    work:"Practical Criticism; Principles of Literary Criticism", url:"#" },
+          { n:"William Empson",          d:"1906–1984",   nat:"British",    work:"Seven Types of Ambiguity",       url:"#" },
+          { n:"Northrop Frye",           d:"1912–1991",   nat:"Canadian",   work:"Anatomy of Criticism; The Great Code", url:"#" },
+          { n:"Paul de Man",             d:"1919–1983",   nat:"Belgian-American",work:"Allegories of Reading; Blindness and Insight", url:"#" },
+          { n:"J. Hillis Miller",        d:"1928–",       nat:"American",   work:"Fiction and Repetition; The Ethics of Reading", url:"#" },
+          { n:"Wayne C. Booth",          d:"1921–2005",   nat:"American",   work:"The Rhetoric of Fiction",        url:"#" },
+          { n:"M.H. Abrams",             d:"1912–2015",   nat:"American",   work:"The Mirror and the Lamp; Natural Supernaturalism", url:"#" },
+          { n:"Harold Bloom",            d:"1930–2019",   nat:"American",   work:"The Anxiety of Influence; The Western Canon", url:"#" },
+          { n:"Sandra Gilbert & Susan Gubar",d:"1936/1944–",nat:"American", work:"The Madwoman in the Attic",      url:"#" },
+          { n:"Elaine Showalter",        d:"1941–",       nat:"American",   work:"A Literature of Their Own; The Female Malady", url:"#" },
+          { n:"bell hooks",              d:"1952–2021",   nat:"American",   work:"Ain't I a Woman?; Teaching to Transgress", url:"#" },
+          { n:"Henry Louis Gates Jr.",   d:"1950–",       nat:"American",   work:"The Signifying Monkey",          url:"#" },
+        ]
+      }
+    ]
+  }
+];
+
+// Nationality colour coding
+const NAT_COLORS = {
+  "British":       { bg:"#E8F0F8", color:"#1A3A6B", border:"#A8C0DC" },
+  "Irish":         { bg:"#E8F5EC", color:"#1A5C2A", border:"#A8D4B0" },
+  "American":      { bg:"#F5EBE8", color:"#7B1D1D", border:"#D4A8A0" },
+  "Indian":        { bg:"#FFF3E0", color:"#7A3C00", border:"#DFBB80" },
+  "Scottish":      { bg:"#EDF3F8", color:"#1A4060", border:"#A0BCCF" },
+  "Welsh":         { bg:"#EEF5EE", color:"#2A5C2A", border:"#A8C8A8" },
+  "French":        { bg:"#F0EAF7", color:"#4A1A70", border:"#C0A0D8" },
+  "German":        { bg:"#F5F0E8", color:"#5C4A00", border:"#D4C080" },
+  "Russian":       { bg:"#F5EEE8", color:"#6B2A1A", border:"#D4B0A0" },
+  "Nigerian":      { bg:"#FFF0E0", color:"#7A3A00", border:"#DFC090" },
+  "Norwegian":     { bg:"#E8EEF5", color:"#1A2A5C", border:"#A0B0CF" },
+  "Italian":       { bg:"#F5F0EC", color:"#5C3A20", border:"#D4C0A8" },
+};
+function natStyle(nat) {
+  const key = Object.keys(NAT_COLORS).find(k => nat.includes(k));
+  return key ? NAT_COLORS[key] : { bg:"#F0EDE8", color:"#5C4A38", border:"#C4B090" };
+}
+
+function buildList() {
+  const container = document.getElementById('writer-list');
+  DATA.forEach(century => {
+    const block = document.createElement('div');
+    block.className = 'century-block';
+    block.innerHTML = `<div class="century-heading">${century.century}</div>`;
+
+    century.periods.forEach(period => {
+      const section = document.createElement('div');
+      section.className = 'period-section';
+      section.innerHTML = `
+        <div class="period-header">
+          <div class="period-dot" style="background:${period.color}"></div>
+          <div class="period-name">${period.name}</div>
+          <div class="period-years">${period.years}</div>
+        </div>
+        <div class="ornament-divider">— ✶ —</div>
+      `;
+      const grid = document.createElement('div');
+      grid.className = 'writer-grid';
+
+      period.writers.forEach(w => {
+        const ns = natStyle(w.nat);
+        const a = document.createElement('a');
+        a.className = 'writer-link';
+        a.href = w.url;
+        a.setAttribute('aria-label', `${w.n}, ${w.nat}, ${w.d}`);
+        a.dataset.search = (w.n + ' ' + w.nat + ' ' + w.work + ' ' + w.d).toLowerCase();
+        a.innerHTML = `
+          <div class="w-stripe" style="background:${period.color}"></div>
+          <div class="w-body">
+            <div class="w-name">${w.n}</div>
+            <div class="w-dates">${w.d}</div>
+            <div class="w-nat" style="background:${ns.bg};color:${ns.color};border-color:${ns.border}">${w.nat}</div>
+            <div class="w-work">${w.work}</div>
+          </div>
+          <span class="w-arrow" aria-hidden="true">›</span>
+        `;
+        grid.appendChild(a);
+      });
+
+      section.appendChild(grid);
+      block.appendChild(section);
+    });
+
+    container.appendChild(block);
+  });
+}
+
+// Search
+const searchEl = document.getElementById('search');
+const noResults = document.getElementById('no-results');
+
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.trim().toLowerCase();
+  const allLinks = document.querySelectorAll('.writer-link');
+  let anyVisible = false;
+
+  allLinks.forEach(a => {
+    const match = !q || a.dataset.search.includes(q);
+    a.classList.toggle('hidden', !match);
+    if (match) anyVisible = true;
+  });
+
+  // Hide/show period sections and century blocks if empty
+  document.querySelectorAll('.period-section').forEach(sec => {
+    const hasVisible = [...sec.querySelectorAll('.writer-link')].some(a => !a.classList.contains('hidden'));
+    sec.style.display = hasVisible ? '' : 'none';
+  });
+  document.querySelectorAll('.century-block').forEach(blk => {
+    const hasVisible = [...blk.querySelectorAll('.writer-link')].some(a => !a.classList.contains('hidden'));
+    blk.style.display = hasVisible ? '' : 'none';
+  });
+
+  noResults.style.display = anyVisible ? 'none' : 'block';
+});
+
+buildList();
+</script>
+</body>
+</html>
