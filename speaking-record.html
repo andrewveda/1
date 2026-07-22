@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SpeakSelf — Self-Intro Master</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f172a;
+  --bg-card: #1e293b;
+  --bg-elevated: #334155;
+  --primary: #38bdf8;
+  --primary-dim: rgba(56,189,248,0.15);
+  --accent: #f472b6;
+  --accent-dim: rgba(244,114,182,0.15);
+  --success: #34d399;
+  --success-dim: rgba(52,211,153,0.15);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251,191,36,0.15);
+  --danger: #f87171;
+  --danger-dim: rgba(248,113,113,0.15);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #334155;
+  --border-subtle: rgba(51,65,85,0.5);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* App Shell */
+.app {
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+  padding-bottom:90px;
+}
+
+/* Header */
+.header {
+  background:linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0) 100%);
+  backdrop-filter:blur(20px);
+  padding:16px 20px 8px;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.header-inner {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.brand-icon {
+  width:36px; height:36px;
+  background:linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.brand-text { font-size:18px; font-weight:800; letter-spacing:-0.5px; }
+.brand-sub { font-size:11px; color:var(--text-muted); font-weight:500; }
+.streak {
+  display:flex; align-items:center; gap:6px;
+  background:var(--warning-dim);
+  color:var(--warning);
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* Progress Bar */
+.progress-track {
+  height:3px;
+  background:var(--border);
+  border-radius:2px;
+  margin-top:12px;
+  overflow:hidden;
+}
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius:2px;
+  transition:width 0.5s cubic-bezier(0.4,0,0.2,1);
+  width:0%;
+}
+
+/* Sections */
+.section { display:none; animation:fadeUp 0.35s ease; }
+.section.active { display:block; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* Content padding */
+.content { padding:0 16px 20px; }
+
+/* Mode Selector */
+.mode-scroll {
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:2px 2px 12px;
+  margin-bottom:4px;
+  scrollbar-width:none;
+}
+.mode-scroll::-webkit-scrollbar { display:none; }
+.mode-chip {
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:9px 14px;
+  background:var(--bg-card);
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.mode-chip.active {
+  background:linear-gradient(135deg, var(--primary-dim), var(--accent-dim));
+  border-color:var(--primary);
+  color:var(--text);
+}
+.mode-chip:active { transform:scale(0.96); }
+
+/* Step Card */
+.step-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+.step-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.step-card.active::before { opacity:1; }
+.step-card.done { opacity:0.6; }
+.step-card.done .step-check { display:flex; }
+
+.step-header {
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:14px;
+}
+.step-num {
+  width:36px; height:36px;
+  background:var(--bg-elevated);
+  border:2px solid var(--border);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700;
+  color:var(--text-muted);
+  flex-shrink:0;
+  transition:all 0.3s;
+}
+.step-card.active .step-num {
+  background:var(--primary-dim);
+  border-color:var(--primary);
+  color:var(--primary);
+}
+.step-card.done .step-num {
+  background:var(--success-dim);
+  border-color:var(--success);
+  color:var(--success);
+}
+.step-check {
+  display:none;
+  width:36px; height:36px;
+  background:var(--success-dim);
+  border:2px solid var(--success);
+  border-radius:10px;
+  align-items:center; justify-content:center;
+  font-size:16px;
+  flex-shrink:0;
+}
+.step-title { font-size:16px; font-weight:700; margin-bottom:2px; }
+.step-sub { font-size:13px; color:var(--text-muted); }
+
+/* Question Box */
+.q-box {
+  background:linear-gradient(135deg, rgba(56,189,248,0.08), rgba(244,114,182,0.08));
+  border:1px solid rgba(56,189,248,0.2);
+  border-radius:var(--radius-sm);
+  padding:18px;
+  margin-bottom:14px;
+  position:relative;
+}
+.q-label {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--primary-dim);
+  color:var(--primary);
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:10px;
+}
+.q-text {
+  font-size:18px;
+  font-weight:600;
+  line-height:1.45;
+  color:var(--text);
+}
+.q-sub {
+  font-size:13px;
+  color:var(--text-muted);
+  margin-top:8px;
+  line-height:1.5;
+}
+
+/* Hints */
+.hints-box {
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:14px;
+  margin-bottom:14px;
+}
+.hints-title {
+  font-size:12px;
+  font-weight:700;
+  color:var(--warning);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.hint-item {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border-subtle);
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.5;
+}
+.hint-item:last-child { border-bottom:none; padding-bottom:0; }
+.hint-item:first-child { padding-top:0; }
+.hint-bullet {
+  width:6px; height:6px;
+  background:var(--warning);
+  border-radius:50%;
+  margin-top:7px;
+  flex-shrink:0;
+}
+
+/* Sample Answer */
+.sample-box {
+  background:var(--success-dim);
+  border:1px solid rgba(52,211,153,0.2);
+  border-radius:var(--radius-sm);
+  padding:14px;
+  margin-bottom:14px;
+}
+.sample-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+.sample-label {
+  font-size:12px;
+  font-weight:700;
+  color:var(--success);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.sample-toggle {
+  background:none;
+  border:none;
+  color:var(--success);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  padding:4px 10px;
+  border-radius:6px;
+  transition:background 0.2s;
+}
+.sample-toggle:hover { background:rgba(52,211,153,0.1); }
+.sample-text {
+  font-size:14px;
+  line-height:1.7;
+  color:var(--text);
+  display:none;
+}
+.sample-text.show { display:block; animation:fadeUp 0.3s ease; }
+.sample-highlight { color:var(--success); font-weight:600; }
+
+/* Recording UI */
+.record-ring {
+  width:140px; height:140px;
+  margin:20px auto;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.record-ring svg {
+  position:absolute;
+  top:0; left:0;
+  width:140px; height:140px;
+  transform:rotate(-90deg);
+}
+.record-bg { fill:none; stroke:var(--border); stroke-width:4; }
+.record-progress {
+  fill:none;
+  stroke:var(--danger);
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-dasharray:415;
+  stroke-dashoffset:415;
+  transition:stroke-dashoffset 1s linear;
+}
+.record-btn {
+  width:72px; height:72px;
+  border-radius:50%;
+  background:var(--danger);
+  border:none;
+  color:white;
+  font-size:28px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 30px rgba(248,113,113,0.4);
+  transition:all 0.3s;
+  position:relative;
+  z-index:2;
+}
+.record-btn.recording {
+  animation:pulseRecord 1.5s infinite;
+  background:var(--danger);
+}
+.record-btn:hover { transform:scale(1.05); }
+.record-btn:active { transform:scale(0.95); }
+@keyframes pulseRecord {
+  0%,100% { box-shadow:0 0 0 0 rgba(248,113,113,0.5); }
+  50% { box-shadow:0 0 0 20px rgba(248,113,113,0); }
+}
+.record-status {
+  text-align:center;
+  font-size:14px;
+  font-weight:600;
+  color:var(--danger);
+  margin-bottom:16px;
+}
+.record-timer {
+  text-align:center;
+  font-size:36px;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text);
+  margin-bottom:4px;
+  font-variant-numeric:tabular-nums;
+}
+.record-label {
+  text-align:center;
+  font-size:12px;
+  color:var(--text-muted);
+  margin-bottom:20px;
+}
+
+/* Audio Wave Animation */
+.wave-container {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  height:40px;
+  margin:16px 0;
+}
+.wave-bar {
+  width:4px;
+  background:var(--primary);
+  border-radius:2px;
+  animation:wave 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { height:12px; animation-delay:0s; }
+.wave-bar:nth-child(2) { height:24px; animation-delay:0.1s; }
+.wave-bar:nth-child(3) { height:32px; animation-delay:0.2s; }
+.wave-bar:nth-child(4) { height:20px; animation-delay:0.3s; }
+.wave-bar:nth-child(5) { height:36px; animation-delay:0.15s; }
+.wave-bar:nth-child(6) { height:16px; animation-delay:0.25s; }
+.wave-bar:nth-child(7) { height:28px; animation-delay:0.05s; }
+@keyframes wave {
+  0%,100% { transform:scaleY(0.5); opacity:0.5; }
+  50% { transform:scaleY(1); opacity:1; }
+}
+
+/* Buttons */
+.btn {
+  width:100%;
+  padding:14px 20px;
+  border-radius:var(--radius-sm);
+  border:none;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-family:inherit;
+  -webkit-appearance:none;
+}
+.btn:active { transform:scale(0.97); }
+.btn-primary {
+  background:linear-gradient(135deg, var(--primary), #0ea5e9);
+  color:#0f172a;
+  box-shadow:0 4px 16px rgba(56,189,248,0.3);
+}
+.btn-primary:hover { box-shadow:0 6px 24px rgba(56,189,248,0.4); }
+.btn-outline {
+  background:transparent;
+  border:1.5px solid var(--border);
+  color:var(--text);
+}
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+.btn-success {
+  background:linear-gradient(135deg, var(--success), #10b981);
+  color:#0f172a;
+  box-shadow:0 4px 16px rgba(52,211,153,0.3);
+}
+.btn-danger {
+  background:var(--danger);
+  color:white;
+}
+.btn-group {
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.btn-group .btn { flex:1; }
+
+/* Skip / Navigation */
+.skip-row {
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+.skip-btn {
+  flex:1;
+  padding:10px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-xs);
+  color:var(--text-muted);
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+}
+.skip-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+/* Vocab Chips */
+.vocab-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.vocab-chip {
+  padding:6px 12px;
+  background:var(--primary-dim);
+  border:1px solid rgba(56,189,248,0.2);
+  border-radius:20px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--primary);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.vocab-chip:hover {
+  background:var(--primary);
+  color:#0f172a;
+}
+
+/* Audio Player */
+.audio-player {
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:16px;
+  margin-bottom:12px;
+}
+.audio-row {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.audio-play {
+  width:44px; height:44px;
+  border-radius:50%;
+  background:var(--primary);
+  border:none;
+  color:#0f172a;
+  font-size:16px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.audio-waveform {
+  flex:1;
+  height:32px;
+  background:var(--bg-card);
+  border-radius:6px;
+  position:relative;
+  overflow:hidden;
+}
+.audio-waveform::after {
+  content:'';
+  position:absolute;
+  top:50%; left:0; right:0;
+  height:2px;
+  background:var(--primary);
+  opacity:0.3;
+}
+.audio-time {
+  font-size:12px;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  min-width:50px;
+  text-align:right;
+}
+.audio-actions {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.audio-actions .btn { font-size:13px; padding:10px; }
+
+/* Download Section */
+.download-card {
+  background:linear-gradient(135deg, rgba(56,189,248,0.1), rgba(244,114,182,0.1));
+  border:1.5px solid rgba(56,189,248,0.25);
+  border-radius:var(--radius);
+  padding:24px;
+  text-align:center;
+}
+.download-icon {
+  width:64px; height:64px;
+  background:var(--primary-dim);
+  border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px;
+  margin:0 auto 16px;
+}
+.download-title { font-size:18px; font-weight:700; margin-bottom:6px; }
+.download-desc { font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+
+/* Tips Banner */
+.tips-banner {
+  background:var(--warning-dim);
+  border:1px solid rgba(251,191,36,0.2);
+  border-radius:var(--radius-sm);
+  padding:14px;
+  margin-bottom:16px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.tips-icon { font-size:20px; flex-shrink:0; margin-top:2px; }
+.tips-content { flex:1; }
+.tips-title { font-size:13px; font-weight:700; color:var(--warning); margin-bottom:4px; }
+.tips-text { font-size:13px; color:var(--text-muted); line-height:1.5; }
+
+/* Section Title */
+.sec-title {
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sec-title span { font-size:22px; }
+
+/* Bottom Nav */
+.bottom-nav {
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:rgba(15,23,42,0.95);
+  backdrop-filter:blur(20px);
+  display:flex;
+  justify-content:space-around;
+  padding:8px 0 24px;
+  border-top:1px solid var(--border);
+  z-index:100;
+}
+.nav-item {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  padding:6px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all 0.2s;
+  color:var(--text-muted);
+  font-size:11px;
+  font-weight:500;
+  border:none;
+  background:none;
+  font-family:inherit;
+}
+.nav-item.active { color:var(--primary); }
+.nav-item.active .nav-icon { background:var(--primary-dim); }
+.nav-icon {
+  width:28px; height:28px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:8px;
+  font-size:18px;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.modal-overlay.active { display:flex; }
+.modal-box {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  max-width:400px;
+  width:100%;
+  text-align:center;
+}
+.modal-title { font-size:18px; font-weight:700; margin-bottom:8px; }
+.modal-text { font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.5; }
+
+/* Confetti */
+.confetti { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:300; }
+.confetti-piece {
+  position:absolute;
+  width:8px; height:8px;
+  animation:confettiFall 3s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform:translateY(-20px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Utility */
+.hidden { display:none !important; }
+.text-center { text-align:center; }
+.mt-12 { margin-top:12px; }
+.mb-12 { margin-bottom:12px; }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">🎙️</div>
+      <div>
+        <div class="brand-text">SpeakSelf</div>
+        <div class="brand-sub">Real-life self-intro practice</div>
+      </div>
+    </div>
+    <div class="streak">🔥 <span id="streak-count">12</span></div>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-bar"></div>
+  </div>
+</div>
+
+<!-- HOME SECTION -->
+<div class="section active" id="sec-home">
+  <div class="content">
+    <div class="sec-title">👋 Let's Introduce You</div>
+
+    <div class="tips-banner">
+      <div class="tips-icon">💡</div>
+      <div class="tips-content">
+        <div class="tips-title">One skill, four settings</div>
+        <div class="tips-text">The same 6 questions come up everywhere — exams, interviews, meeting new people, and networking events. Switch the mode inside Practice to see how your answer should change with the setting.</div>
+      </div>
+    </div>
+
+    <div class="step-card active" id="step-0" onclick="goToStep(0)">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Your Name & Greeting</div>
+          <div class="step-sub">Introducing yourself to someone new</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <div class="step-card" id="step-1" onclick="goToStep(1)">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Where You're From</div>
+          <div class="step-sub">Your hometown or where you're currently based</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <div class="step-card" id="step-2" onclick="goToStep(2)">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Work or Study</div>
+          <div class="step-sub">What you do and how you talk about it</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <div class="step-card" id="step-3" onclick="goToStep(3)">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Your Daily Life</div>
+          <div class="step-sub">How you spend your time outside work</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <div class="step-card" id="step-4" onclick="goToStep(4)">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div>
+          <div class="step-title">Your Interests</div>
+          <div class="step-sub">Hobbies and things you're passionate about</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <div class="step-card" id="step-5" onclick="goToStep(5)">
+      <div class="step-header">
+        <div class="step-num">6</div>
+        <div>
+          <div class="step-title">Future Plans</div>
+          <div class="step-sub">Where you're headed next</div>
+        </div>
+        <div class="step-check">✓</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary mt-12" onclick="goToStep(0)">
+      ▶ Start Practicing
+    </button>
+  </div>
+</div>
+
+<!-- PRACTICE SECTION -->
+<div class="section" id="sec-practice">
+  <div class="content">
+    <div class="sec-title" id="practice-title">🎯 Question 1 of 6</div>
+
+    <div class="mode-scroll" id="mode-scroll"></div>
+
+    <div class="q-box">
+      <div class="q-label" id="q-label">🎤 They Ask</div>
+      <div class="q-text" id="q-text">Can I have your full name, please?</div>
+      <div class="q-sub" id="q-sub">The examiner wants to confirm your identity. Keep it simple and clear.</div>
+    </div>
+
+    <!-- Hints -->
+    <div class="hints-box">
+      <div class="hints-title">💡 Hints & Structure</div>
+      <div id="hints-list">
+      </div>
+    </div>
+
+    <!-- Vocab -->
+    <div class="hints-box" style="background:var(--primary-dim); border-color:rgba(56,189,248,0.15);">
+      <div class="hints-title" style="color:var(--primary);">✨ Useful Phrases</div>
+      <div class="vocab-row" id="vocab-list">
+      </div>
+    </div>
+
+    <!-- Sample Answer -->
+    <div class="sample-box">
+      <div class="sample-header">
+        <span class="sample-label" id="sample-label">📝 Sample Answer</span>
+        <button class="sample-toggle" onclick="toggleSample()">Show</button>
+      </div>
+      <div class="sample-text" id="sample-text"></div>
+    </div>
+
+    <!-- Recording -->
+    <div class="step-card" style="text-align:center;">
+      <div class="record-timer" id="record-timer">00:00</div>
+      <div class="record-label" id="record-label">Tap to start recording your answer</div>
+
+      <div class="record-ring">
+        <svg viewBox="0 0 140 140">
+          <circle class="record-bg" cx="70" cy="70" r="66"/>
+          <circle class="record-progress" id="record-progress" cx="70" cy="70" r="66"/>
+        </svg>
+        <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎙️</button>
+      </div>
+
+      <div class="wave-container hidden" id="wave-bars">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+
+      <div class="record-status hidden" id="record-status">🔴 Recording...</div>
+
+      <div class="btn-group" id="playback-controls" style="display:none;">
+        <button class="btn btn-outline" onclick="playRecording()">▶ Play</button>
+        <button class="btn btn-danger" onclick="discardRecording()">🗑 Discard</button>
+      </div>
+    </div>
+
+    <!-- Skip / Next -->
+    <div class="skip-row">
+      <button class="skip-btn" onclick="prevStep()">← Previous</button>
+      <button class="skip-btn" onclick="nextStep()">Next →</button>
+    </div>
+    <button class="btn btn-outline mt-12" onclick="goHome()">🏠 Back to Overview</button>
+  </div>
+</div>
+
+<!-- REVIEW SECTION -->
+<div class="section" id="sec-review">
+  <div class="content">
+    <div class="sec-title">🎉 Practice Complete!</div>
+
+    <div class="download-card">
+      <div class="download-icon">🎧</div>
+      <div class="download-title">Your Recordings</div>
+      <div class="download-desc">Download all your practice recordings to review later.</div>
+      <button class="btn btn-primary" onclick="downloadMP3()">
+        ⬇ Download Recordings
+      </button>
+    </div>
+
+    <div class="sec-title" style="margin-top:24px;">📼 Session Recordings</div>
+    <div id="recordings-list">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="tips-banner" style="margin-top:20px;">
+      <div class="tips-icon">📊</div>
+      <div class="tips-content">
+        <div class="tips-title">Self-Assessment Checklist</div>
+        <div class="tips-text">Listen back and check: Did you speak for 15-25 seconds per answer? Did you use linking words? Was your pronunciation clear? Did you avoid one-word answers? Try replaying the same answer in a different mode!</div>
+      </div>
+    </div>
+
+    <button class="btn btn-outline mt-12" onclick="resetAll()">🔄 Start Over</button>
+    <button class="btn btn-success mt-12" onclick="goHome()">🏠 Back Home</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="showNav('home', this)">
+    <div class="nav-icon">🏠</div>
+    <span>Home</span>
+  </button>
+  <button class="nav-item" onclick="showNav('practice', this)">
+    <div class="nav-icon">🎯</div>
+    <span>Practice</span>
+  </button>
+  <button class="nav-item" onclick="showNav('review', this)">
+    <div class="nav-icon">📼</div>
+    <span>Recordings</span>
+  </button>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Title</div>
+    <div class="modal-text" id="modal-text">Message</div>
+    <div class="btn-group">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modal-confirm" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ===================== MODES =====================
+const MODES = [
+  { key: 'ielts',      icon: '🎓', label: 'IELTS Exam',        qLabel: '🎤 Examiner Says',  sampleLabel: '📝 Sample Answer (Band 8)' },
+  { key: 'interview',  icon: '💼', label: 'Job Interview',     qLabel: '🎤 Interviewer Asks', sampleLabel: '📝 Strong Sample Answer' },
+  { key: 'casual',     icon: '☕', label: 'Meeting Friends',   qLabel: '🎤 A New Friend Asks', sampleLabel: '📝 Natural Example' },
+  { key: 'networking', icon: '🤝', label: 'Networking Event',  qLabel: '🎤 A New Contact Asks', sampleLabel: '📝 Confident Example' }
+];
+
+// ===================== DATA =====================
+const steps = [
+  {
+    title: "Your Name & Greeting",
+    modes: {
+      ielts: {
+        question: "Can I have your full name, please?",
+        sub: "The examiner wants to confirm your identity. Keep it simple and clear.",
+        hints: ["Say your full name clearly", "Mention what you'd like to be called", "Keep it under 10 seconds", "Smile and make eye contact (if in person)"],
+        vocab: ["My name is...", "You can call me...", "My full name is...", "Please call me..."],
+        sample: "My name is <span class='sample-highlight'>Priya Sharma</span>, and <span class='sample-highlight'>you can call me Priya</span>. I'm from Bangalore, which is known as India's Silicon Valley. <span class='sample-highlight'>I currently work as a software engineer</span> at a multinational company, focusing on cloud infrastructure. <span class='sample-highlight'>In my free time, I enjoy reading mystery novels</span> and playing badminton.",
+        timeLimit: 15
+      },
+      interview: {
+        question: "Thanks for coming in — could you start by telling me a bit about yourself?",
+        sub: "This is your professional handshake. Open with your name and current role in one breath.",
+        hints: ["State your name confidently", "Give your current role or title right away", "Keep energy warm but professional", "One sentence is enough before moving on"],
+        vocab: ["Thanks for having me...", "I'm [Name], currently working as...", "It's great to be here", "I go by..."],
+        sample: "<span class='sample-highlight'>Thanks so much for having me. My name is Arjun Mehta</span>, and <span class='sample-highlight'>I'm currently working as a marketing coordinator</span> at a retail startup. I've been in the industry for about two years now, and I'm really excited about this opportunity.",
+        timeLimit: 20
+      },
+      casual: {
+        question: "Hey, I don't think we've met — what's your name?",
+        sub: "Keep it light and friendly. This is the start of a conversation, not a report.",
+        hints: ["Use a relaxed, warm tone", "Share your name and maybe a nickname", "Ask their name back — it's a two-way exchange", "A little humor is welcome"],
+        vocab: ["Hey, I'm...", "Nice to meet you!", "And you are?", "People usually call me..."],
+        sample: "<span class='sample-highlight'>Hey, I'm Zara!</span> Nice to meet you. <span class='sample-highlight'>I don't think I caught your name</span> — what should I call you?",
+        timeLimit: 12
+      },
+      networking: {
+        question: "Hi there, I don't believe we've been introduced — what's your name?",
+        sub: "First impressions at a networking event happen fast. Lead with your name and one hook.",
+        hints: ["Offer your name with a firm, friendly tone", "Add your role or field as a hook", "Keep it to two sentences max", "Have a business card or LinkedIn ready"],
+        vocab: ["Hi, I'm... and I work in...", "Great to meet you", "I don't think we've met yet", "Here's my card if you'd like it"],
+        sample: "<span class='sample-highlight'>Hi, I'm Daniel Cho — I work in product design</span> over at a fintech company. Great to meet you, <span class='sample-highlight'>I don't think we've crossed paths before</span>.",
+        timeLimit: 15
+      }
+    }
+  },
+  {
+    title: "Where You're From",
+    modes: {
+      ielts: {
+        question: "Where are you from? Can you describe your hometown?",
+        sub: "Add one interesting detail about your place. Don't just name the city.",
+        hints: ["Name your city and country", "Add ONE memorable detail (famous for, known as, located near)", "Mention how long you've lived there", "Describe the atmosphere in 1-2 words"],
+        vocab: ["I'm from...", "located in...", "known as...", "famous for...", "a bustling city", "a peaceful town", "I've lived there for..."],
+        sample: "I'm from <span class='sample-highlight'>Pune, a city in western India</span>. It's <span class='sample-highlight'>known as the Oxford of the East</span> because of its many universities. <span class='sample-highlight'>I've lived there all my life</span>, about 22 years now. It's a great mix of modern life and cultural heritage — you'll find IT parks alongside ancient forts.",
+        timeLimit: 25
+      },
+      interview: {
+        question: "Where are you currently based?",
+        sub: "Keep this brief in an interview — the focus should stay on your professional fit.",
+        hints: ["Name your city in one clause", "Mention if you're open to relocation or remote work", "Don't dwell — move quickly to the next point", "Connect it to logistics, not nostalgia"],
+        vocab: ["I'm based in...", "I'm open to relocating for...", "I currently live in, but...", "I'm comfortable working remotely"],
+        sample: "<span class='sample-highlight'>I'm currently based in Pune</span>, though <span class='sample-highlight'>I'm fully open to relocating</span> for the right opportunity. I've also worked remotely with distributed teams before, so that's never been an issue for me.",
+        timeLimit: 15
+      },
+      casual: {
+        question: "Where are you from originally?",
+        sub: "This is a chance to share something personal and start a real conversation.",
+        hints: ["Name your hometown", "Add a fun or personal detail", "Ask if they know the place", "Mention what you miss or love about it"],
+        vocab: ["I'm originally from...", "born and raised in...", "have you ever been to...?", "It's famous for..."],
+        sample: "<span class='sample-highlight'>I'm originally from Jaipur</span> — born and raised there, actually. It's known for its pink buildings and amazing street food. <span class='sample-highlight'>Have you ever been?</span>",
+        timeLimit: 18
+      },
+      networking: {
+        question: "So, where are you based these days?",
+        sub: "Useful for finding common ground — mention the city and something relevant to the room.",
+        hints: ["State your base city", "Mention if it's relevant to the event's theme", "Look for shared connections", "Keep it short to leave room for their answer"],
+        vocab: ["I'm based out of...", "I relocated here for...", "small world — I...", "Do you know the area?"],
+        sample: "<span class='sample-highlight'>I'm based out of Bangalore</span>, actually relocated here a few years back for the tech scene. Small world — I saw you're from around here too, <span class='sample-highlight'>do you know the Koramangala area well?</span>",
+        timeLimit: 18
+      }
+    }
+  },
+  {
+    title: "Work or Study",
+    modes: {
+      ielts: {
+        question: "Do you work or are you a student? What do you do?",
+        sub: "Give context, not just a job title. Say what you enjoy about it.",
+        hints: ["State clearly: student / working / both", "Mention your field or subject", "Add how long you've been doing it", "Say one thing you like about it (or plan to change)"],
+        vocab: ["I work as a...", "I'm currently studying...", "I'm in my final year of...", "I specialize in...", "I've been doing this for...", "I feel in my element"],
+        sample: "<span class='sample-highlight'>I'm currently studying computer science at university</span>. I'm in my final year and working on a project related to artificial intelligence. <span class='sample-highlight'>I've been doing this for about three years now</span>, and I really enjoy the practical work. I feel in my element when I'm coding.",
+        timeLimit: 25
+      },
+      interview: {
+        question: "Tell me about your current role and responsibilities.",
+        sub: "This is your chance to show impact — use numbers or outcomes if you can.",
+        hints: ["Name your title and company type", "Mention 1-2 key responsibilities", "Add an achievement or metric", "Connect it to why you're interested in this role"],
+        vocab: ["In my current role, I...", "I'm responsible for...", "One thing I'm proud of is...", "This connects to this role because..."],
+        sample: "<span class='sample-highlight'>In my current role as a data analyst, I'm responsible for</span> building dashboards that the leadership team uses weekly. <span class='sample-highlight'>One thing I'm proud of is a reporting pipeline I built that cut manual work by around 60%</span>. That experience is actually why I'm excited about this position.",
+        timeLimit: 25
+      },
+      casual: {
+        question: "So what do you do?",
+        sub: "Keep it conversational — people want the gist, not your resume.",
+        hints: ["One-line summary of your job or studies", "Explain it simply, avoid jargon", "Add how you feel about it", "Ask them the same question back"],
+        vocab: ["I work in...", "I'm studying to become a...", "It keeps me busy!", "What about you?"],
+        sample: "<span class='sample-highlight'>I work in graphic design</span> — mostly branding for small businesses. It keeps me pretty busy but I love it. <span class='sample-highlight'>What about you, what do you do?</span>",
+        timeLimit: 18
+      },
+      networking: {
+        question: "What field are you in?",
+        sub: "Networking is about finding overlap — be specific enough to spark a follow-up question.",
+        hints: ["Name your industry and role", "Mention a current project or focus area", "Invite a follow-up question", "Keep it under 20 seconds"],
+        vocab: ["I work in the... space", "Currently focused on...", "I'd love to hear about your work too", "My focus these days is..."],
+        sample: "<span class='sample-highlight'>I work in the renewable energy space</span>, currently focused on solar financing models for small businesses. <span class='sample-highlight'>I'd love to hear what brought you to this event</span> though — what's your focus these days?",
+        timeLimit: 18
+      }
+    }
+  },
+  {
+    title: "Your Daily Life",
+    modes: {
+      ielts: {
+        question: "What do you do in your free time? What are your daily routines?",
+        sub: "Talk about 2-3 activities. Add WHY you enjoy them.",
+        hints: ["Mention 2-3 different activities", "Add a reason: 'because it helps me...'", "Use frequency words: usually, often, every weekend", "Connect activities to benefits (relax, learn, socialize)"],
+        vocab: ["In my free time...", "I enjoy...", "I find it helps me...", "I try to make time for...", "I usually...", "On weekends..."],
+        sample: "<span class='sample-highlight'>In my free time, I enjoy playing the guitar and watching documentaries</span>. I find it helps me relax and learn something new at the same time. I try to practice guitar every evening for about an hour. On weekends, I usually hang out with friends or explore new cafes in the city.",
+        timeLimit: 25
+      },
+      interview: {
+        question: "How do you like to spend your time outside of work?",
+        sub: "Interviewers ask this for culture fit — show you're well-rounded, not just a job title.",
+        hints: ["Mention 1-2 genuine activities", "Connect it lightly to a transferable skill", "Keep it authentic, not rehearsed", "Don't overshare personal details"],
+        vocab: ["Outside of work, I...", "It helps me stay balanced", "I find it complements my work because...", "I make time for..."],
+        sample: "<span class='sample-highlight'>Outside of work, I play in a weekend football league and I also volunteer at a coding bootcamp</span> for teenagers. It helps me stay balanced, and honestly, <span class='sample-highlight'>mentoring has made me a better communicator at work too</span>.",
+        timeLimit: 22
+      },
+      casual: {
+        question: "What do you usually get up to?",
+        sub: "This is where real friendships start — be specific and enthusiastic.",
+        hints: ["List a couple of things you actually enjoy", "Add small details that make it vivid", "Invite them to join or share tips", "Keep the tone light"],
+        vocab: ["I'm usually...", "On a typical day...", "You should join me sometime!", "I'm kind of obsessed with..."],
+        sample: "<span class='sample-highlight'>I'm usually out hiking on weekends</span>, or binge-watching some show I'm kind of obsessed with. Lately it's been cooking new recipes too — <span class='sample-highlight'>you should come over sometime</span>, I need taste testers!",
+        timeLimit: 20
+      },
+      networking: {
+        question: "How do you like to unwind outside of work?",
+        sub: "A great bridge topic — light, personal, and easy to bond over.",
+        hints: ["Share a genuine interest", "Keep it brief and easy to relate to", "Look for shared hobbies to extend the chat", "Avoid controversial topics"],
+        vocab: ["To unwind, I usually...", "It's a nice break from work", "Do you have any hobbies like that?", "I recently picked up..."],
+        sample: "<span class='sample-highlight'>To unwind, I usually go rock climbing</span> — it's a nice complete break from staring at spreadsheets all week. I recently picked up trail running too. <span class='sample-highlight'>Do you have any hobbies like that?</span>",
+        timeLimit: 20
+      }
+    }
+  },
+  {
+    title: "Your Interests",
+    modes: {
+      ielts: {
+        question: "What hobbies do you have? Have your interests changed over time?",
+        sub: "Show depth — talk about evolution or specific preferences.",
+        hints: ["Name your hobby with enthusiasm", "Describe what exactly you do within it", "Compare past vs present interests", "Mention a goal or achievement related to it"],
+        vocab: ["I'm passionate about...", "I've been into...", "I used to... but now...", "I recently got into...", "It keeps me inspired"],
+        sample: "<span class='sample-highlight'>I'm passionate about photography</span>. I started about two years ago when I got my first DSLR camera. <span class='sample-highlight'>I used to just take random pictures, but now I focus on street photography</span> — capturing everyday moments in the city. I recently got into editing travel videos as well. It keeps me inspired and helps me see beauty in ordinary things.",
+        timeLimit: 25
+      },
+      interview: {
+        question: "What are you passionate about, professionally or personally?",
+        sub: "This reveals character — pick something that shows growth or curiosity.",
+        hints: ["Choose an interest with some depth or story", "Show growth over time", "Tie it back loosely to a relevant strength", "Keep enthusiasm genuine"],
+        vocab: ["I've always been passionate about...", "Over time, this has grown into...", "This ties into my work because...", "It's taught me..."],
+        sample: "<span class='sample-highlight'>I've always been passionate about public speaking</span> — I started with a local Toastmasters group a few years ago and now I run workshops for junior colleagues. <span class='sample-highlight'>It's taught me a lot about breaking down complex ideas clearly</span>, which directly helps in client presentations.",
+        timeLimit: 25
+      },
+      casual: {
+        question: "Got any hobbies you're really into lately?",
+        sub: "Enthusiasm is contagious — let your excitement show.",
+        hints: ["Pick something you're currently excited about", "Explain why it hooked you", "Mention any small milestone or goal", "Ask about their interests too"],
+        vocab: ["I'm really into... right now", "I got hooked because...", "My goal is to...", "What are you into these days?"],
+        sample: "<span class='sample-highlight'>I'm really into pottery right now</span>, actually! I got hooked after one class and now I've got a wheel at home. My goal is to actually sell a few pieces one day. <span class='sample-highlight'>What are you into these days?</span>",
+        timeLimit: 20
+      },
+      networking: {
+        question: "What are you into outside of your field?",
+        sub: "A good way to be memorable — an unexpected interest sticks in people's minds.",
+        hints: ["Share something a bit unexpected or specific", "Keep it short and confident", "Let it become a talking point, not a tangent", "Circle back to professional topics naturally"],
+        vocab: ["Outside of work, I'm into...", "It's a nice contrast to my day job", "Funny enough, that's how I got into...", "I'd happily talk more about it over coffee"],
+        sample: "<span class='sample-highlight'>Outside of work, I'm into amateur astronomy</span>, actually — it's a nice contrast to spreadsheets all day. Funny enough, that's how I first got interested in data visualization. <span class='sample-highlight'>Happy to talk more about it over coffee sometime</span>.",
+        timeLimit: 20
+      }
+    }
+  },
+  {
+    title: "Future Plans",
+    modes: {
+      ielts: {
+        question: "What are your plans for the future? Where do you see yourself in 5 years?",
+        sub: "Be realistic but ambitious. Connect your plans to your current path.",
+        hints: ["Mention a short-term goal (1-2 years)", "Add a long-term aspiration", "Connect it to why you're taking IELTS", "Use future tenses: plan to, hope to, aim to"],
+        vocab: ["I plan to...", "I hope to...", "My goal is to...", "In the near future...", "I'm aiming to...", "I intend to..."],
+        sample: "<span class='sample-highlight'>In the near future, I plan to pursue a master's degree in data science</span> at a university abroad. <span class='sample-highlight'>That's actually why I'm taking the IELTS test</span> — to meet the English language requirements. My long-term goal is to become a data scientist working on climate change solutions. I believe combining technology with environmental conservation can make a real difference.",
+        timeLimit: 30
+      },
+      interview: {
+        question: "Where do you see yourself in the next few years?",
+        sub: "Show ambition that aligns with the role and company, not just personal goals.",
+        hints: ["State a realistic short-term goal", "Connect it to growth within this type of role", "Mention a skill you want to develop", "Keep it aligned with the job you're interviewing for"],
+        vocab: ["In the next few years, I hope to...", "I'm looking to grow into...", "This role feels like a strong next step because...", "I'm keen to develop..."],
+        sample: "<span class='sample-highlight'>In the next few years, I'm hoping to grow into a team lead role</span>, and I'm keen to develop my project management skills along the way. <span class='sample-highlight'>This position feels like a strong next step</span> because of the scope for cross-functional work.",
+        timeLimit: 25
+      },
+      casual: {
+        question: "Any big plans coming up?",
+        sub: "Share something you're genuinely looking forward to — trips, projects, milestones.",
+        hints: ["Mention something concrete and near-term", "Show genuine excitement", "Invite them to share their own plans", "Keep it upbeat"],
+        vocab: ["I'm actually planning to...", "I can't wait for...", "Fingers crossed...", "What about you, any plans?"],
+        sample: "<span class='sample-highlight'>I'm actually planning a trip to Vietnam later this year</span> — I can't wait, it's been on my list forever. <span class='sample-highlight'>What about you, any big plans coming up?</span>",
+        timeLimit: 18
+      },
+      networking: {
+        question: "What are you working towards these days?",
+        sub: "A natural way to invite future collaboration or follow-up conversation.",
+        hints: ["Share a concrete goal (project, launch, career move)", "Keep it forward-looking and energetic", "Open the door for future contact", "End with an easy way to stay in touch"],
+        vocab: ["Right now, I'm working towards...", "I'd love to stay in touch as that progresses", "Let's connect on LinkedIn", "I'm hoping to launch..."],
+        sample: "<span class='sample-highlight'>Right now, I'm working towards launching a new sustainability initiative</span> at my company. <span class='sample-highlight'>I'd love to stay in touch as that progresses</span> — let's connect on LinkedIn.",
+        timeLimit: 20
+      }
+    }
+  }
+];
+
+// ===================== STATE =====================
+let currentStep = 0;
+let currentMode = 'ielts';
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let recordings = []; // { step, mode, blob, url, duration, date }
+let recordTimer = null;
+let recordSeconds = 0;
+let currentBlob = null;
+let currentDuration = 0;
+
+// ===================== NAVIGATION =====================
+function showNav(section, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + section).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+
+  if(section === 'review') renderRecordings();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  showSection('sec-home');
+  updateNav('home');
+}
+
+function updateNav(section) {
+  const map = { home:0, practice:1, review:2 };
+  document.querySelectorAll('.nav-item').forEach((n,i) => {
+    n.classList.toggle('active', i === map[section]);
+  });
+}
+
+// ===================== MODE SELECTOR =====================
+function renderModeSelector() {
+  const el = document.getElementById('mode-scroll');
+  el.innerHTML = MODES.map(m => `
+    <div class="mode-chip ${m.key === currentMode ? 'active' : ''}" onclick="setMode('${m.key}')">
+      <span>${m.icon}</span><span>${m.label}</span>
+    </div>
+  `).join('');
+}
+
+function setMode(key) {
+  currentMode = key;
+  resetRecordUI();
+  loadStep();
+}
+
+// ===================== STEPS =====================
+function goToStep(n) {
+  if(n < 0 || n >= steps.length) return;
+  currentStep = n;
+  loadStep();
+  showSection('sec-practice');
+  updateNav('practice');
+  updateProgress();
+}
+
+function nextStep() {
+  if(currentStep < steps.length - 1) {
+    goToStep(currentStep + 1);
+  } else {
+    showReview();
+  }
+}
+
+function prevStep() {
+  if(currentStep > 0) goToStep(currentStep - 1);
+}
+
+function loadStep() {
+  const modeData = MODES.find(m => m.key === currentMode);
+  const s = steps[currentStep].modes[currentMode];
+
+  renderModeSelector();
+
+  document.getElementById('practice-title').textContent = `🎯 Question ${currentStep + 1} of ${steps.length}`;
+  document.getElementById('q-label').textContent = modeData.qLabel;
+  document.getElementById('q-text').textContent = s.question;
+  document.getElementById('q-sub').textContent = s.sub;
+  document.getElementById('sample-label').textContent = modeData.sampleLabel;
+
+  // Hints
+  document.getElementById('hints-list').innerHTML = s.hints.map(h =>
+    `<div class="hint-item"><div class="hint-bullet"></div>${h}</div>`
+  ).join('');
+
+  // Vocab
+  document.getElementById('vocab-list').innerHTML = s.vocab.map(v =>
+    `<span class="vocab-chip" onclick="speakText('${v.replace(/'/g,"\\'")}')">${v}</span>`
+  ).join('');
+
+  // Sample
+  document.getElementById('sample-text').innerHTML = s.sample;
+  document.getElementById('sample-text').classList.remove('show');
+  document.querySelector('.sample-toggle').textContent = 'Show';
+
+  // Reset recording UI
+  resetRecordUI();
+
+  // Update home cards
+  document.querySelectorAll('.step-card').forEach((card, i) => {
+    card.classList.remove('active','done');
+    if(i === currentStep) card.classList.add('active');
+    else if(i < currentStep) card.classList.add('done');
+  });
+}
+
+function updateProgress() {
+  const pct = ((currentStep) / steps.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function toggleSample() {
+  const el = document.getElementById('sample-text');
+  const btn = document.querySelector('.sample-toggle');
+  el.classList.toggle('show');
+  btn.textContent = el.classList.contains('show') ? 'Hide' : 'Show';
+}
+
+// ===================== RECORDING =====================
+async function toggleRecording() {
+  if(!isRecording) {
+    await startRecording();
+  } else {
+    stopRecording();
+  }
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = e => {
+      if(e.data.size > 0) audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      currentBlob = blob;
+      currentDuration = recordSeconds;
+      const url = URL.createObjectURL(blob);
+      recordings[currentStep] = {
+        step: currentStep,
+        mode: currentMode,
+        blob: blob,
+        url: url,
+        duration: recordSeconds,
+        date: new Date().toLocaleString()
+      };
+      stream.getTracks().forEach(t => t.stop());
+      showPlayback();
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+    recordSeconds = 0;
+
+    // UI
+    document.getElementById('record-btn').classList.add('recording');
+    document.getElementById('record-btn').textContent = '⏹';
+    document.getElementById('record-status').classList.remove('hidden');
+    document.getElementById('wave-bars').classList.remove('hidden');
+    document.getElementById('record-label').textContent = 'Tap the button to stop';
+    document.getElementById('playback-controls').style.display = 'none';
+
+    // Timer
+    recordTimer = setInterval(() => {
+      recordSeconds++;
+      document.getElementById('record-timer').textContent = formatTime(recordSeconds);
+      // Update ring
+      const maxTime = steps[currentStep].modes[currentMode].timeLimit;
+      const circumference = 2 * Math.PI * 66;
+      const offset = circumference - (recordSeconds / maxTime) * circumference;
+      document.getElementById('record-progress').style.strokeDashoffset = Math.max(0, offset);
+    }, 1000);
+
+  } catch(err) {
+    showModal('Microphone Access Required', 'Please allow microphone access in your browser settings to record your practice.');
+  }
+}
+
+function stopRecording() {
+  if(!mediaRecorder || mediaRecorder.state === 'inactive') return;
+  mediaRecorder.stop();
+  isRecording = false;
+  clearInterval(recordTimer);
+
+  document.getElementById('record-btn').classList.remove('recording');
+  document.getElementById('record-btn').textContent = '🎙️';
+  document.getElementById('wave-bars').classList.add('hidden');
+  document.getElementById('record-status').classList.add('hidden');
+  document.getElementById('record-label').textContent = 'Recording saved! Review below.';
+}
+
+function showPlayback() {
+  document.getElementById('playback-controls').style.display = 'flex';
+}
+
+function playRecording() {
+  const rec = recordings[currentStep];
+  if(!rec) return;
+  const audio = new Audio(rec.url);
+  audio.play();
+}
+
+function discardRecording() {
+  recordings[currentStep] = null;
+  resetRecordUI();
+}
+
+function resetRecordUI() {
+  isRecording = false;
+  clearInterval(recordTimer);
+  recordSeconds = 0;
+  document.getElementById('record-timer').textContent = '00:00';
+  document.getElementById('record-btn').classList.remove('recording');
+  document.getElementById('record-btn').textContent = '🎙️';
+  document.getElementById('wave-bars').classList.add('hidden');
+  document.getElementById('record-status').classList.add('hidden');
+  document.getElementById('record-label').textContent = 'Tap to start recording your answer';
+  document.getElementById('playback-controls').style.display = 'none';
+  document.getElementById('record-progress').style.strokeDashoffset = 415;
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+// ===================== TEXT TO SPEECH =====================
+function speakText(text) {
+  if('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 0.9;
+    utter.pitch = 1;
+    window.speechSynthesis.speak(utter);
+  }
+}
+
+// ===================== REVIEW & DOWNLOAD =====================
+function showReview() {
+  showSection('sec-review');
+  updateNav('review');
+  renderRecordings();
+  fireConfetti();
+  updateProgress();
+  document.getElementById('progress-bar').style.width = '100%';
+}
+
+function renderRecordings() {
+  const container = document.getElementById('recordings-list');
+  const validRecs = recordings.filter(r => r);
+
+  if(validRecs.length === 0) {
+    container.innerHTML = '<div class="step-card" style="text-align:center; color:var(--text-muted);"><p>No recordings yet.</p><p style="font-size:13px; margin-top:8px;">Go through the practice steps and record your answers!</p></div>';
+    return;
+  }
+
+  container.innerHTML = validRecs.map((rec) => {
+    const modeInfo = MODES.find(m => m.key === rec.mode) || MODES[0];
+    return `
+    <div class="audio-player">
+      <div class="audio-row">
+        <button class="audio-play" onclick="playAudio(${rec.step})">▶</button>
+        <div class="audio-waveform"></div>
+        <div class="audio-time">${formatTime(rec.duration)}</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <span style="font-size:13px; font-weight:600;">${steps[rec.step].title} · ${modeInfo.icon} ${modeInfo.label}</span>
+        <span style="font-size:11px; color:var(--text-dim);">${rec.date}</span>
+      </div>
+      <div class="audio-actions">
+        <button class="btn btn-outline" style="flex:1;" onclick="playAudio(${rec.step})">▶ Play</button>
+        <button class="btn btn-outline" style="flex:1;" onclick="downloadSingle(${rec.step})">⬇ Save</button>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+function playAudio(stepIdx) {
+  const rec = recordings[stepIdx];
+  if(!rec) return;
+  const audio = new Audio(rec.url);
+  audio.play();
+}
+
+function downloadSingle(stepIdx) {
+  const rec = recordings[stepIdx];
+  if(!rec) return;
+  const a = document.createElement('a');
+  a.href = rec.url;
+  a.download = `speakself_${steps[stepIdx].title.toLowerCase().replace(/\s+/g,'_')}.webm`;
+  a.click();
+}
+
+async function downloadMP3() {
+  const validRecs = recordings.filter(r => r);
+  if(validRecs.length === 0) {
+    showModal('No Recordings', 'You have not recorded anything yet. Go through the practice steps first!');
+    return;
+  }
+
+  showModal('Downloading...', 'Preparing your recordings. Each file will be saved individually.');
+
+  validRecs.forEach((rec, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = rec.url;
+      a.download = `speakself_${String(i+1).padStart(2,'0')}_${steps[rec.step].title.toLowerCase().replace(/\s+/g,'_')}.webm`;
+      a.click();
+    }, i * 500);
+  });
+
+  setTimeout(() => closeModal(), validRecs.length * 500 + 500);
+}
+
+// ===================== RESET =====================
+function resetAll() {
+  recordings = [];
+  currentStep = 0;
+  document.getElementById('progress-bar').style.width = '0%';
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active','done'));
+  document.getElementById('step-0').classList.add('active');
+  goHome();
+}
+
+// ===================== MODAL =====================
+function showModal(title, text) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-text').textContent = text;
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// ===================== CONFETTI =====================
+function fireConfetti() {
+  const colors = ['#38bdf8','#f472b6','#34d399','#fbbf24','#f87171'];
+  for(let i=0; i<50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.animationDelay = Math.random() * 1 + 's';
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 4000);
+  }
+}
+
+// ===================== INIT =====================
+loadStep();
+</script>
+</body>
+</html>
