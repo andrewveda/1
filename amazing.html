@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>An Invitation to Luncheon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Cormorant+SC:wght@600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #14261F;
+    --parchment:  #F2EAD9;
+    --parchment-2:#E9DEC5;
+    --gold:       #A9843E;
+    --gold-soft:  #D8BE86;
+    --burgundy:   #6E2430;
+    --sage:       #55705B;
+    --line:       rgba(20,38,31,0.18);
+    --shadow:     0 18px 40px rgba(20,38,31,0.16);
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background: var(--ink);
+  }
+
+  body{
+    font-family: 'EB Garamond', 'Georgia', serif;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .page{
+    min-height: 100dvh;
+    background:
+      radial-gradient(circle at 50% -10%, rgba(216,190,134,0.16), transparent 55%),
+      var(--ink);
+    padding: calc(28px + var(--safe-t)) 18px calc(40px + var(--safe-b));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---------- crest ---------- */
+  .crest{
+    width: 74px;
+    height: 74px;
+    margin-bottom: 22px;
+    color: var(--gold-soft);
+    opacity: 0;
+    animation: rise 900ms ease-out 100ms forwards;
+  }
+
+  .eyebrow{
+    font-family: 'Cormorant SC', serif;
+    font-size: 12.5px;
+    letter-spacing: 0.32em;
+    color: var(--gold-soft);
+    margin: 0 0 6px;
+    opacity: 0;
+    animation: rise 900ms ease-out 220ms forwards;
+  }
+
+  h1.title{
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: clamp(34px, 10vw, 46px);
+    line-height: 1.05;
+    color: var(--parchment);
+    text-align: center;
+    margin: 0 0 28px;
+    opacity: 0;
+    animation: rise 900ms ease-out 320ms forwards;
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .crest, .eyebrow, .title{ animation: none; opacity: 1; }
+  }
+
+  /* ---------- invitation card ---------- */
+  .card{
+    width: 100%;
+    max-width: 460px;
+    background: var(--parchment);
+    border-radius: 2px;
+    box-shadow: var(--shadow);
+    padding: 34px 26px 30px;
+    position: relative;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    inset: 10px;
+    border: 1px solid var(--gold);
+    pointer-events:none;
+  }
+
+  .card::after{
+    content:"";
+    position:absolute;
+    inset: 14px;
+    border: 1px solid var(--line);
+    pointer-events:none;
+  }
+
+  .invite-copy{
+    font-size: 18px;
+    line-height: 1.72;
+    color: var(--ink);
+    text-align: left;
+  }
+
+  .invite-copy p{ margin: 0 0 16px; }
+  .invite-copy p:last-child{ margin-bottom: 0; }
+
+  .drop{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 3.1em;
+    line-height: 0.72;
+    float: left;
+    padding: 6px 6px 0 0;
+    color: var(--burgundy);
+  }
+
+  .lede{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--sage);
+  }
+
+  /* ---------- divider ---------- */
+  .divider{
+    width: 100%;
+    max-width: 460px;
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin: 34px 0 26px;
+  }
+  .divider .rule{ flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--gold-soft), transparent); }
+  .divider .mark{ color: var(--gold-soft); font-size: 14px; letter-spacing: 0.1em; }
+
+  /* ---------- honour roll heading ---------- */
+  .roll-head{
+    width:100%;
+    max-width: 460px;
+    text-align:center;
+    margin-bottom: 22px;
+  }
+
+  .roll-head h2{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--parchment);
+    font-size: clamp(26px, 7vw, 32px);
+    margin: 0 0 8px;
+  }
+
+  .roll-head p{
+    font-family: 'Cormorant SC', serif;
+    font-size: 11.5px;
+    letter-spacing: 0.24em;
+    color: var(--gold-soft);
+    margin: 0;
+  }
+
+  /* ---------- action buttons ---------- */
+  .btn-group {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    background: rgba(169, 132, 62, 0.08);
+    border: 1px solid var(--gold);
+    color: var(--gold-soft);
+    font-family: 'Cormorant SC', serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; 
+    left: -100%;
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(216,190,134,0.2), transparent);
+    transition: all 0.6s ease;
+  }
+
+  .action-btn:hover::before {
+    left: 100%;
+  }
+
+  .action-btn:hover, .action-btn:active {
+    background: var(--gold);
+    color: var(--ink);
+    box-shadow: 0 6px 18px rgba(169, 132, 62, 0.35);
+    border-color: var(--gold-soft);
+    transform: translateY(-2px);
+  }
+
+  .action-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 16px;
+  }
+
+  /* ---------- honour roll panel ---------- */
+  .roll-panel{
+    width: 100%;
+    max-width: 460px;
+    background: var(--parchment);
+    border-radius: 2px;
+    box-shadow: var(--shadow);
+    padding: 8px 26px;
+    position: relative;
+  }
+
+  .roll{
+    position: relative;
+  }
+
+  .roll-row{
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .roll-row .words{
+    font-family: 'EB Garamond', serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .roll-row .word-line{
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--sage);
+    letter-spacing: 0.01em;
+    padding: 3px 0;
+  }
+
+  .roll-row .initial{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.7em;
+    color: var(--burgundy);
+    vertical-align: -0.05em;
+    margin-right: 0.02em;
+  }
+
+  /* ---------- footer ---------- */
+  .footer{
+    width: 100%;
+    max-width: 460px;
+    text-align: center;
+    margin-top: 34px;
+  }
+
+  .footer .sign{
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold-soft);
+    font-size: 17px;
+  }
+
+  .footer .fine{
+    font-family: 'Cormorant SC', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(242,234,217,0.45);
+    margin-top: 10px;
+  }
+
+  @media (min-width: 560px){
+    .card{ padding: 44px 48px 40px; }
+    .invite-copy{ font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <svg class="crest" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
+    <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="1"/>
+    <path d="M50 20 L54 44 L78 44 L58 58 L66 82 L50 68 L34 82 L42 58 L22 44 L46 44 Z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/>
+  </svg>
+
+  <p class="eyebrow">A Formal Petition</p>
+  <h1 class="title">An Invitation<br>to Luncheon</h1>
+
+  <div class="card">
+    <div class="invite-copy">
+      <p><span class="drop">I</span> beg you, with the utmost humility and sincerity, to confer upon me the inestimable privilege of treating you during lunch tomorrow.</p>
+      <p class="lede">While there may be many theories floating about about the cause of this &lsquo;treat&rsquo;, the reasons are myriad.</p>
+    
+    </div>
+  </div>
+
+  <div class="divider"><span class="rule"></span><span class="mark">&#10022;</span><span class="rule"></span></div>
+
+  <div class="roll-head">
+    <h2>The myriad reasons are given by the amazing ladies in the department who are...</h2>
+  </div>
+  
+  <div class="btn-group">
+    <button class="action-btn" id="alpha-btn">Alphabetical</button>
+    <button class="action-btn" id="random-btn">Random</button>
+    <button class="action-btn" id="rev-alpha-btn">Reverse Alphabetical</button>
+  </div>
+
+  <div class="roll-panel">
+    <div class="roll" id="honour-list"></div>
+
+    <div class="action-row">
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="sign">With affection, and a growling stomach</p>
+    <p class="fine">Do join me &mdash; the table is booked for one o&rsquo;clock</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var entries = [
+    ["Amazing","Radiant","Terrific","Helping","Inspirational"],
+    ["Jubilant","Affectionate","Youthful","Astute","Nurturing","Thoughtful","Honest","Intrepid"],
+    ["Sparkling","Understanding","Graceful","Astounding","Noble","Young-hearted","Admirable"],
+    ["Spirited","Harmonious","Enterprising","Empathetic","Brilliant","Accomplished"],
+    ["Generous","Effervescent","Endearing","Tender-hearted","Humble","Accomplished"],
+    ["Resilient","Original","Spirited","Humorous","Adventurous","Noble"],
+    ["Charismatic","Harmonious","Imaginative","Tenacious","Honest","Resourceful","Astute"],
+    ["Vivacious","Ingenious","Joyous","Amiable","Yearning","Affectionate","Lively","Admirable","Kind-hearted","Scholarly","Humble","Magnanimous","Insightful"],
+    ["Poised","Astute","Diligent","Magnificent","Admirable","Perceptive","Refined","Intuitive","Youthful","Affable"]
+  ];
+
+  var list = document.getElementById('honour-list');
+  var rowElements = [];
+
+  function buildRow(words){
+    var row = document.createElement('div');
+    row.className = 'roll-row';
+
+    var wordsEl = document.createElement('div');
+    wordsEl.className = 'words';
+
+    words.forEach(function(w){
+      var line = document.createElement('div');
+      line.className = 'word-line';
+      var first = document.createElement('span');
+      first.className = 'initial';
+      first.textContent = w.charAt(0);
+      line.appendChild(first);
+      line.appendChild(document.createTextNode(w.slice(1)));
+      wordsEl.appendChild(line);
+    });
+
+    row.appendChild(wordsEl);
+    return row;
+  }
+
+  // Initial population of the list
+  entries.forEach(function(words){ 
+    var row = buildRow(words);
+    rowElements.push(row);
+    list.appendChild(row); 
+  });
+
+  // Sorting helper function
+  function sortList(direction) {
+    rowElements.sort(function(a, b) {
+      var textA = a.textContent || a.innerText;
+      var textB = b.textContent || b.innerText;
+      
+      if (textA < textB) return -1 * direction;
+      if (textA > textB) return 1 * direction;
+      return 0;
+    });
+    
+    // Re-append DOM elements in sorted order
+    rowElements.forEach(function(row) {
+      list.appendChild(row);
+    });
+  }
+
+  // Alphabetical button event listener
+  document.getElementById('alpha-btn').addEventListener('click', function() {
+    sortList(1);
+  });
+
+  // Reverse Alphabetical button event listener
+  document.getElementById('rev-alpha-btn').addEventListener('click', function() {
+    sortList(-1);
+  });
+
+  // Random button event listener
+  document.getElementById('random-btn').addEventListener('click', function() {
+    // Fisher-Yates shuffle
+    for (var i = rowElements.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = rowElements[i];
+      rowElements[i] = rowElements[j];
+      rowElements[j] = temp;
+    }
+    
+    // Re-append DOM elements in the new random order
+    rowElements.forEach(function(row) {
+      list.appendChild(row);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
